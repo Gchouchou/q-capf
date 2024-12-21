@@ -88,7 +88,7 @@ if[
 if[
  not `file in key args;
  / output to stout
- output_handle:-1
+ output_handle:1
  ];
 
 output_handle each .j.j result;
