@@ -1,9 +1,9 @@
 /
 Read all functions and variables from a remote session
--handle :host:port(:username:password) as an argument for remote execute or defaults to local
+-handle :host:port(:username:password) for remote query or defaults to local
 -other_namespaces if we want to return variables from other from other namespaces.
 -except "namespace1,namespace2..." to remove certain namespaces
--file "path/to/file" to output the json to a file
+-file "path/to/file" to output the json to a file defaults to stout
 \
 
 / read command arguments
