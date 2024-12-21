@@ -41,7 +41,7 @@ get_variable_dict:{[other_namespaces;excluded_namespaces]
   t: type x;
   / helper function to get string body
   max_body: 100; / maximum length
-  get_body:{[max_body;x] $[max_body < count .Q.s x; (max_body# .Q.s x), "..."; .Q.s x]}[max_body];
+  truncate_string:{[max_body;s] $[max_body < count s; (max_body# s), "..."; s]}[max_body];
 
   / output documentation dictionary
   :$[
@@ -50,9 +50,9 @@ get_variable_dict:{[other_namespaces;excluded_namespaces]
    / is a dictionary give keys
    t = 99 ; `type`keys! t, enlist key x;
    / is a lambda, give parameters, file and body excerpt
-   t = 100; `type`param`file`body! t,(enlist (value x)[1]), (enlist (value x)[6]), enlist get_body x;
+   t = 100; `type`param`file`body! t,(enlist (value x)[1]), (enlist (value x)[6]), enlist truncate_string (value x)[8];
    / projection, composition, iteration
-   t within (104;111); `type`body! t, enlist get_body x;
+   t within (104;111); `type`body! t, enlist truncate_string (value x)[8];
    / other only give type
    (enlist `type)!enlist t
    ]
