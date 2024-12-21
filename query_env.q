@@ -81,19 +81,16 @@ if[10h=type result; -2 result; exit -1];
 if[
  `file in key args;
  file: args[`file];
- file:$[":" <> first string file; `$":", string file; file];
- output_handle: hopen file
+ file:`$ $[":" <> first file; ":", string file; file];
+ output_handle: hopen file;
+ output_handle .j.j result;
+ hclose output_handle
  ];
 
 if[
  not `file in key args;
  / output to stout
- output_handle:1
+ 1 .j.j result
  ];
-
-output_handle each .j.j result;
-
-/ close handle
-if[`file in key args; hclose output_handle];
 
 exit 0
