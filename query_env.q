@@ -15,16 +15,13 @@ other_namespaces: `other_namespaces in key args;
 excluded_namespaces: $[other_namespaces; {`$x} each vs args[`except]; ()] union `q`Q`h`j`o;
 
 /
-We create a json string where
-every variable has their type
+We create a json string where every variable has their type
 tables have their row names
-lambda have their parameter list,
-file location
-and a short excerpt of the body
+lambda have their parameter list, file location and a short excerpt of the body
 compositions and projections only get the excerpt of the body
 dictionaries have the list of keys
-the json will also have the structure of namespace: list of variables and functions
-The function will only look at depth 1 since it is hard to determine
+the json will have the structure of namespace:  variables : type, doc, etc..
+The function will only look at depth 1 since it is not possible to determine
 the difference between a dictionary and a sub sub namespace.
 \
 get_variable_dict:{[other_namespaces;excluded_namespaces]
