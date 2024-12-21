@@ -25,18 +25,19 @@ The function will only look at depth 1 since it is not possible to determine
 the difference between a dictionary and a sub sub namespace.
 \
 get_variable_dict:{[other_namespaces;excluded_namespaces]
- namespaces:`global,$[other_namespaces; (key `) except excluded_namespaces; ()];
+ / global namespace is represented by empty symbol `
+ namespaces:`,$[other_namespaces; (key `) except excluded_namespaces; ()];
 
  get_func_var_from_namespace:{[namespace]
   / function that returns all variables and functions of namespace
-  snamespace:$[namespace=`global;"";".",string namespace];
+  snamespace:$[namespace=`;"";".",string namespace];
   :(system "v ", snamespace), (system "f ", snamespace)
   };
 
  get_doc:{[namespace; variable]
   / creates a dictionary of documentation about VARIABLE in NAMESPACE
   / get variable/function using eval
-  x: eval $[namespace=`global; variable; `$".", (string namespace), ".", string variable];
+  x: eval $[namespace=`; variable; `$".", (string namespace), ".", string variable];
   t: type x;
   / helper function to get string body
   max_body: 100; / maximum length
