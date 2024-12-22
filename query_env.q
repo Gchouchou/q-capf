@@ -26,11 +26,11 @@ the difference between a dictionary and a sub sub namespace.
 \
 get_variable_dict:{[other_namespaces;excluded_namespaces]
  / global namespace is represented by empty symbol `
- namespaces:$[other_namespaces; (`, key `) except excluded_namespaces; enlist `];
+ namespaces:$[other_namespaces; `, key `; enlist `] except excluded_namespaces;
 
  get_func_var_from_namespace:{[namespace]
   / function that returns all variables and functions of namespace
-  snamespace:$[namespace=`;"";".",string namespace];
+  snamespace:$[namespace=`; ""; ".", string namespace];
   :(system "v ", snamespace), (system "f ", snamespace)
   };
 
@@ -65,8 +65,7 @@ get_variable_dict:{[other_namespaces;excluded_namespaces]
   } [get_func_var_from_namespace; get_doc];
 
  / putting it all together
- vdict: namespaces! generate each namespaces;
- :vdict
+ :namespaces! generate each namespaces
  };
 
 / no handle, just evaluate it locally
