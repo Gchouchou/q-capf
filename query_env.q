@@ -12,7 +12,7 @@ args: .Q.opt .z.x
 handle: `$args[`handle];
 other_namespaces: `other_namespaces in key args;
 / exclude the default q Q h j o namespaces
-excluded_namespaces: $[other_namespaces; {`$x} each vs args[`except]; ()] union `q`Q`h`j`o;
+excluded_namespaces: $[other_namespaces & `except in key args; {`$x} each vs args[`except]; ()] union `q`Q`h`j`o;
 
 /
 We create a json string where every variable has their type
@@ -26,7 +26,7 @@ the difference between a dictionary and a sub sub namespace.
 \
 get_variable_dict:{[other_namespaces;excluded_namespaces]
  / global namespace is represented by empty symbol `
- namespaces:`,$[other_namespaces; (key `) except excluded_namespaces; ()];
+ namespaces:$[other_namespaces; (`, key `) except excluded_namespaces; enlist `];
 
  get_func_var_from_namespace:{[namespace]
   / function that returns all variables and functions of namespace
