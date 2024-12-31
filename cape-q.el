@@ -15,15 +15,12 @@
 (defvar cape-q--temp-output ""
   "String variable to hold q process output. Used in `cape-q-json-output-filter'.")
 
-(defconst cape-q-base (file-name-directory load-file-name)
-  "The path to the package.")
-
 (defvar cape-q-function
   (q-strip
    (with-temp-buffer
      (insert-file-contents (concat (file-name-directory load-file-name) "/" "query_env.q"))
      (buffer-string)))
-  "String containing a q lambda.")
+  "String containing the q lambda to scrape session variables.")
 
 (defvar cape-q--namespace ""
   "Namespace string for capf.")
@@ -218,36 +215,42 @@ Auto completes variables and functions."
             (lambda (cand)
               (when-let* ((candidates (gethash cape-q--namespace cape-q-session-vars))
                           (doc (gethash cand candidates))
-                          (docs (hash-table-keys doc)))
+                          (docs (hash-table-keys doc))
+                          (body (mapconcat #'identity
+                                           (list
+                                            (when (member "type" docs)
+                                              (format "%s is a %s." cand (cape-q-describe-type (gethash "type" doc))))
+                                            (when (member "doc" docs)
+                                              (format "%s" (gethash "doc" docs)))
+                                            (when (member "cols" docs)
+                                              ;; cols is converted to a vector
+                                              (format "Table Columns:\n%s"
+                                                      (mapconcat #'identity (gethash "cols" doc) ", ")))
+                                            (when (member "keys" docs)
+                                              ;; keys is converted to a vector
+                                              (format "Dictionary Keys:\n%s"
+                                                      (mapconcat #'identity (gethash "keys" doc) ", ")))
+                                            (when (member "param" docs)
+                                              ;; params is converted to a vector
+                                              (format "Function Parameters Names:\n%s"
+                                                      (mapconcat #'identity (gethash "param" doc) ", ")))
+                                            (when (member "file" docs)
+                                              (concat (format "Function source file: %s" (gethash "file" doc))
+                                                      (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
+                                            (when (member "body" docs)
+                                              (format "Function Body:\n%s" (gethash "body" doc))))
+                                           "\n\n")))
                 (with-current-buffer (get-buffer-create "*documentation*")
                   (erase-buffer)
                   (fundamental-mode)
                   (save-excursion
-                    (when (member "type" docs)
-                      (insert (format "%s is a %s.\n\n" cand (cape-q-describe-type (gethash "type" doc)))))
-                    (when (member "cols" docs)
-                      ;; cols is converted to a vector
-                      (insert (format "Table Columns:\n%s\n\n"
-                                      (mapconcat #'identity (gethash "cols" doc) ", "))))
-                    (when (member "keys" docs)
-                      ;; keys is converted to a vector
-                      (insert (format "Dictionary Keys\n%s\n\n"
-                                      (mapconcat #'identity (gethash "keys" doc) ", "))))
-                    (when (member "param" docs)
-                      ;; params is converted to a vector
-                      (insert (format "Function Parameters Names:\n%s\n\n"
-                                      (mapconcat #'identity (gethash "param" doc) ", "))))
-                    (when (member "file" docs)
-                      (insert (format "Function source file: %s\n\n" (gethash "file" doc))))
-                    (when (member "body" docs)
-                      (insert (format "Function Body:\n%s\n\n" (gethash "body" doc))))
+                    (insert body)
                     (visual-line-mode))
                   (current-buffer))))))))
 
 (defun cape-q--bounds ()
   "Return the bounds of a variable or function in q.
 If it cannot match a valid variable it will give begin and end bounds at point."
-  (interactive)
   (save-excursion
     (let* ((initial (point))
            (begin (prog2 (while (and (not (bobp))

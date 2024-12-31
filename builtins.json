@@ -1,0 +1,1066 @@
+{
+    "z": {
+        "a": {
+            "type": -6,
+            "doc": "IP Address"
+        },
+        "ac": {
+            "doc": "Custom HTTP Auth Handler"
+        },
+        "b": {
+            "type": 99,
+            "doc": "Dependecy Dictionary"
+        },
+        "bm": {
+            "doc": "MSG Validator"
+        },
+        "c": {
+            "type": -6,
+            "doc": "Number of Cores"
+        },
+        "e": {
+            "type": 99,
+            "doc": "TLS connection status"
+        },
+        "ex": {
+            "doc": "Failed Primitive in Debugger Session"
+        },
+        "ey": {
+            "doc": "Argument to Failed Primitive in Debugger Session"
+        },
+        "exit": {
+            "doc": "Action on Exit"
+        },
+        "f": {
+            "type": -11,
+            "doc": "q Script Command Line File"
+        },
+        "H": {
+            "type": 6,
+            "doc": "Active Sockets"
+        },
+        "h": {
+            "type": -11,
+            "doc": "hostname"
+        },
+        "i": {
+            "type": -6,
+            "doc": "PID"
+        },
+        "K": {
+            "type": -9,
+            "doc": "kdb+ Version"
+        },
+        "k": {
+            "type": -14,
+            "doc": "kdb+ version release date"
+        },
+        "l": {
+            "type": 0,
+            "doc": "license information"
+        },
+        "N": {
+            "type": -16,
+            "doc": "System local time as timespan"
+        },
+        "n": {
+            "type": -16,
+            "doc": "System UTC time as timespan"
+        },
+        "o": {
+            "type": -11,
+            "doc": "OS and Version"
+        },
+        "P": {
+            "type": -12,
+            "doc": "Localtime timestamp"
+        },
+        "p": {
+            "type": -12,
+            "doc": "UTC timestamp"
+        },
+        "pc": {
+            "doc": "Function called after a connection has been closed"
+        },
+        "pd": {
+            "doc": "peach Handles"
+        },
+        "pg": {
+            "doc": "Handler for GET Requests"
+        },
+        "ph": {
+            "doc": "Handler for HTTP GET Requests"
+        },
+        "pi": {
+            "doc": "Handler for Console Input"
+        },
+        "pm": {
+            "doc": "Handler for OPTIONS, PATCH, PUT and DELETE HTTP Methods"
+        },
+        "po": {
+            "doc": "Handler after Connection Initialization"
+        },
+        "pp": {
+            "doc": "Handler for HTTP POST request"
+        },
+        "pq": {
+            "doc": "Handler for qcon Text Protocol"
+        },
+        "ps": {
+            "doc": "Handler for Asynchronous Requests."
+        },
+        "pw": {
+            "doc": "Validate User Function"
+        },
+        "q": {
+            "type": -1,
+            "doc": "Quiet Mode Status"
+        },
+        "r": {
+            "type": -1,
+            "doc": "If update would be blocked in current context"
+        },
+        "s": {
+            "doc": "Reference to self function"
+        },
+        "ts": {
+            "doc": "Custom Function run on timer \t"
+        },
+        "u": {
+            "type": -11,
+            "doc": "User id"
+        },
+        "vs": {
+            "doc": "Hook after a value is set in default namespace"
+        },
+        "W": {
+            "type": 99,
+            "doc": "Dictionary of IPC handles and bytes waiting in queue"
+        },
+        "w": {
+            "type": -6,
+            "doc": "Connection Handle"
+        },
+        "wc": {
+            "doc": "Hook after a websocket connection has been closed"
+        },
+        "wo": {
+            "doc": "Hook after a websocket connection has been opened"
+        },
+        "ws": {
+            "doc": "Hook on message arriving at websocket"
+        },
+        "X": {
+            "type": 0,
+            "doc": "Raw list of all strings with which command line was invoked"
+        },
+        "x": {
+            "type": 0,
+            "doc": "Command-line arguments as list of strings, cleaned"
+        },
+        "Z": {
+            "type": -15,
+            "doc": "local datetime"
+        },
+        "z": {
+            "type": -15,
+            "doc": "UTC datetime"
+        },
+        "zd": {
+            "doc": "Custom Compression and/or encryption parameters"
+        },
+        "T": {
+            "type": -19,
+            "doc": "Local time"
+        },
+        "t": {
+            "type": -19,
+            "doc": "UTC time"
+        },
+        "D": {
+            "type": -14,
+            "doc": "Local date"
+        },
+        "d": {
+            "type": -14,
+            "doc": "UTC date"
+        }
+    },
+
+    "j": {
+        "j": {
+            "type": 105,
+            "param": ["object"],
+            "doc": "Serialize object to json"
+        },
+        "jd": {
+            "type": 104,
+            "param": ["object", "dictionary"],
+            "doc": "Serialize object to json, but maps 0w, -0w to null if dictionary [null0w]:1b"
+        },
+        "k": {
+            "type": 104,
+            "param": ["json"],
+            "doc": "Deserialize json string to K object"
+        }
+    },
+
+    "": {
+        "abs": {
+            "type": 101,
+            "param": ["number"],
+            "doc": "Absolute Value, atomic function"
+        },
+        "avg": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "Arithmetic mean of list"
+        },
+        "wavg": {
+            "type": 102,
+            "param": ["weights", "list"],
+            "doc": "Weighted average of list, is infix function"
+        },
+        "bin": {
+            "type": 102,
+            "param": [ "sorted", "items" ],
+            "doc": "Binary search.\nIndex of item in sorted where items is greater than item at index, gives -1 if less than first.\ninfix function"
+        },
+        "binr": {
+            "type": 102,
+            "param": [ "sorted", "items" ],
+            "doc": "Binary search right.\nIndex of first item in sorted where items is lesser than item at index.\ninfix function"
+        },
+        "cor": {
+            "type": 102,
+            "param": [ "list1", "list2" ],
+            "doc": "Correlation between list1 and list2, is an infix function"
+        },
+        "cos": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "cosine of numeric in radians"
+        },
+        "acos": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "arcosine of numeric in radians"
+        },
+        "cov": {
+            "type": 102,
+            "param": [ "list1", "list2" ],
+            "doc": "Covariance between list1 and list2, is an infix function"
+        },
+        "dev": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "Standard deviation of list"
+        },
+        "div": {
+            "type": 102,
+            "param": [ "num1", "num2" ],
+            "doc": "Integer division between num1 and num2"
+        },
+        "enlist": {
+            "type": 101,
+            "param": [ "args" ],
+            "doc": "Return a list with one or more argument as items"
+        },
+        "exit": {
+            "type": 101,
+            "param": ["code"],
+            "doc": "Exits with exit code"
+        },
+        "exp": {
+            "type": 101,
+            "param": ["power"],
+            "doc": "return e to the power, or null if number is null, is multithreaded primitive"
+        },
+        "xexp": {
+            "type": 102,
+            "param": [ "base", "power" ],
+            "doc": "return base to the power, or null if base is null or negative, is infix and multithreaded primitive"
+        },
+        "getenv": {
+            "type": 101,
+            "param": [ "symbol" ],
+            "doc": "return environment variable value of symbol"
+        },
+        "setenv": {
+            "type": 102,
+            "param": [ "symbol", "string" ],
+            "doc": "set environment variable value of symbol to string"
+        },
+        "hopen": {
+            "type": 101,
+            "param": ["handle_symbol"],
+            "doc": "connect to process or file through handle symbol, returns handle"
+        },
+        "in": {
+            "type": 102,
+            "param": [ "items", "target_list" ],
+            "doc": "returns if items in target_list, is left atomic"
+        },
+        "insert": {
+            "type": 102,
+            "param": [ "table_symbol", "records" ],
+            "doc": "insert records into already existing table_symbol, or create table with name symbol with table records"
+        },
+        "like": {
+            "type": 102,
+            "param": [ "symbol_or_string", "pattern" ],
+            "doc": "returns if symbol/string matches pattern, note regex is not the same"
+        },
+        "log": {
+            "type": 101,
+            "param": ["number"],
+            "doc": "natural logarithm of number, is multithreaded primitive"
+        },
+        "max": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "maximum of list"
+        },
+        "min": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "minimum of list"
+        },
+        "prd": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "product of list, nulls are treated as 1"
+        },
+        "sin": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "sine of numeric in radians"
+        },
+        "asin": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "arsine of numeric in radians"
+        },
+        "sqrt": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "returns square root of number, is atomic and multithreaded primitive\nreturns null if negative or null, 0 if real/float infinity, or square root of largest value"
+        },
+        "ss": {
+            "type": 102,
+            "param": [ "string", "pattern" ],
+            "doc": "returns the list of starting indices of pattern matches, is infix function"
+        },
+        "sum": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "returns the sum of items in list"
+        },
+        "wsum": {
+            "type": 102,
+            "param": ["weights", "list"],
+            "doc": "returns weighted sum of list, is infix function"
+        },
+        "tan": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "returns tangent of numeric in radians"
+        },
+        "atan": {
+            "type": 101,
+            "param": ["numeric"],
+            "doc": "returns arctangent of numeric in radians"
+        },
+        "var": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "returns variance of list"
+        },
+        "within": {
+            "type": 102,
+            "param": [ "atom_or_list", "bounds" ],
+            "doc": "returns if atom or each item of list is within or equal to bounds"
+        }
+    },
+
+    "q": {
+        "aj": {
+            "type": 100,
+            "param": [ "columns", "table1", "table2" ],
+            "doc": "as-of join, boundary time from table1"
+        },
+        "aj0": {
+            "type": 100,
+            "param": [ "columns", "table1", "table2" ],
+            "doc": "as-of join, actual time from table2"
+        },
+        "ajf": {
+            "type": 100,
+            "param": [ "columns", "table1", "table2" ],
+            "doc": "as-of join, fill from LHS if RHS is null, boundary time from table1"
+        },
+        "ajf0": {
+            "type": 100,
+            "param": [ "columns", "table1", "table2" ],
+            "doc": "as-of join, fill from LHS if RHS is null, actual time from table2"
+        },
+        "all": {
+            "type": 105,
+            "param": [ "object" ],
+            "doc": "if list are all non-zero, a non-zero atom, an empty list"
+        },
+        "any": {
+            "type": 105,
+            "param": [ "object" ],
+            "doc": "if list has an non-zero, a non-zero atom"
+        },
+        "and": {
+            "type": 102,
+            "param": [ "left", "right" ],
+            "doc": "Lesser of left and right"
+        },
+        "asc": {
+            "type": 100,
+            "param": [ "object" ],
+            "doc": "ascending sort:\nsort dictionaries by value\ntable by first non-key column\nmixed list by datatype and by type"
+        },
+        "iasc": {
+            "type": 100,
+            "param": [ "object" ],
+            "doc": "Indexes needed to sort list object in ascending order i.e. first index is the index of the smallest element and asc[l]~l[ iasc[l] ]"
+        },
+        "xasc": {
+            "type": 100,
+            "param": [ "columns", "table" ],
+            "doc": "Sort table in ascending order of specified columns, infix function"
+        },
+        "asof": {
+            "type": 100,
+            "param": [ "table1", "table2" ],
+            "doc": "returns the values of the last row matching the rest of the keys and time <= the time in table 2"
+        },
+        "attr": {
+            "type": 104,
+            "param": [ "object" ],
+            "doc": "return object attributes as symbol vector: sorted, unique, partitioned, true index"
+        },
+        "avgs": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "Running average of list"
+        },
+        "mavg": {
+            "type": 100,
+            "param": [ "int", "list"],
+            "doc": "Moving average of int items of list, is infix function"
+        },
+        "ceiling": {
+            "type": 105,
+            "param": ["list"],
+            "doc": "Least integer greater than or equal to boolean or numeric in list, is an atomic function"
+        },
+        "count": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "Number of items or 1"
+        },
+        "mcount": {
+            "type": 100,
+            "param": [ "int", "list" ],
+            "doc": "Moving count of int items in list, is inflix function"
+        },
+        "cols": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "List of columns from table, symbol of table variable name or filesymbol"
+        },
+        "xcol": {
+            "type": 100,
+            "param": [ "new_cols", "table" ],
+            "doc": "Rename table with new_cols, in that order, is an infix function"
+        },
+        "xcols": {
+            "type": 100,
+            "param": [ "cols", "table" ],
+            "doc": "Reorder table with cols order, is an infix function"
+        },
+        "scov": {
+            "type": 100,
+            "param": [ "list1", "list2" ],
+            "doc": "Sample covariance between list1 and list2, is an infix function"
+        },
+        "cross": {
+            "type": 100,
+            "param": [ "list1", "list2" ],
+            "doc": "Cross product between list1 and list2, is an infix function"
+        },
+        "csv": {
+            "type": -10
+        },
+        "cut": {
+            "type": 100,
+            "param": [ "indices", "list" ],
+            "doc": "split list by indices into list of lists"
+        },
+        "deltas": {
+            "type": 109,
+            "param": ["list"],
+            "doc": "Difference between consecutive items of list"
+        },
+        "desc": {
+            "type": 100,
+            "param": [ "object" ],
+            "doc": "descending sort:\nsort dictionaries by value\ntable by first non-key column\nmixed list by datatype and by type"
+        },
+        "idesc": {
+            "type": 100,
+            "param": [ "object" ],
+            "doc": "Indexes needed to sort list object in descending order"
+        },
+        "xdesc": {
+            "type": 100,
+            "param": [ "columns", "table" ],
+            "doc": "Sort table in descending order of specified columns, infix function"
+        },
+        "fills": {
+            "type": 108,
+            "param": ["list"],
+            "doc": "replace nulls with previous non-null values"
+        },
+        "or": {
+            "type": 102,
+            "param": [ "left", "right" ],
+            "doc": "Greater of left and right, is a multithreaded primitive"
+        },
+        "and": {
+            "type": 102,
+            "param": [ "left", "right" ],
+            "doc": "Lesser of left and right, is a multithreaded primitive"
+        },
+        "mmu": {
+            "type": 102,
+            "param": [ "matrix1", "matrix2" ],
+            "doc": "Matrix or dot product of matrix1 and matrix2"
+        },
+        "mdev": {
+            "type": 100,
+            "param": [ "int", "list"],
+            "doc": "Moving deviation of int items of list, is infix function"
+        },
+        "sdev": {
+            "type": 100,
+            "param": [ "list" ],
+            "doc": "Sample standard deviation"
+        },
+        "differ": {
+            "type": 105,
+            "param": ["list"],
+            "doc": "Returns boolean list where consecutive values of list differ"
+        },
+        "distinct": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "Returns distinct items of list"
+        },
+        "dsave": {
+            "type": 110,
+            "param": [ "path", "tables" ],
+            "doc": "save tables to path"
+        },
+        "each": {
+            "type": 100,
+            "param": [ "function", "list" ],
+            "doc": "Applies function to each item of list"
+        },
+        "peach": {
+            "type": 100,
+            "param": [ "function", "list" ],
+            "doc": "Applies function to each item of list but in parallel, if there are subprocesses"
+        },
+        "ej": {
+            "type": 100,
+            "param": [ "cols", "table1", "table2" ],
+            "doc": "Returns table1 joined table2 on cols, where they are equal"
+        },
+        "ema": {
+            "type": 100,
+            "param": [ "smoothing", "list" ],
+            "doc": "Returns exponential moving average with smoothing parameter smoothing, list or atom, is infix function"
+        },
+        "eval": {
+            "type": 104,
+            "param": ["tree"],
+            "doc": "evaluate parse tree and returns result"
+        },
+        "reval": {
+            "type": 104,
+            "param": ["tree"],
+            "doc": "evaluate parse tree and returns result, but blocks deletion"
+        },
+        "except": {
+            "type": 100,
+            "param": [ "list", "exceptions" ],
+            "doc": "Returns list but without exceptions"
+        },
+        "fby": {
+            "type": 100,
+            "param": [ "aggregator_item_list", "indicator" ],
+            "doc": "returns item list, grouped by indicator then applies aggregator to each group. is infix function"
+        },
+        "first": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "return first item of list or dictionary"
+        },
+        "last": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "return last item of list or dictionary"
+        },
+        "fkeys": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "returns a dictionary that maps foreign-key columns to their tables"
+        },
+        "flip": {
+            "type": 101,
+            "param": [ "object" ],
+            "doc": "Transposes object, could be list of lists, dictionary or table"
+        },
+        "ceiling": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "Least integer less than or equal to boolean or numeric in list, is an atomic function"
+        },
+        "get": {
+            "type": 101,
+            "param": ["path_or_symbol"],
+            "doc": "get the expression of symbol atom or from path"
+        },
+        "set": {
+            "type": 100,
+            "param": [ "target", "source" ],
+            "doc": "set target value to source, target can be global name, file or directory, can also specify compression algorithm"
+        },
+        "group": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "Return dictionary where key are elements and values is the list of indices where it is present"
+        },
+        "gtime": {
+            "type": 100,
+            "param": ["local_timestamp"],
+            "doc": "shifts local timestamp to UTC time"
+        },
+        "ltime": {
+            "type": 100,
+            "param": ["UTC_timestamp"],
+            "doc": "shifts UTC timestamp to local time"
+        },
+        "hcount": {
+            "type": 104,
+            "param": ["file_symbol"],
+            "doc": "return size of file symbol in bytes"
+        },
+        "hdel": {
+            "type": 101,
+            "param": ["file_symbol"],
+            "doc": "delete the file or folder and echo input"
+        },
+        "hclose": {
+            "type": 101,
+            "param": ["handle"],
+            "doc": "close connection handle, this is should be an integer from hopen"
+        },
+        "hsym": {
+            "type": 105,
+            "param": ["symbols"],
+            "doc": "prefix symbols with colon if it does not beign with one"
+        },
+        "ij": {
+            "type": 100,
+            "param": [ "table1", "keyed_table2" ],
+            "doc": "returns table1 joined on common values of key columns of table2, and the columns should share the same name"
+        },
+        "ijf": {
+            "type": 100,
+            "param": [ "table1", "keyed_table2" ],
+            "doc": "returns table1 joined on common values of key columns of table2, and the columns should share the same name"
+        },
+        "inter": {
+            "type": 100,
+            "param": [ "list1", "list2" ],
+            "doc": "return common values of list1, list2, for dictionaries, uses common values"
+        },
+        "inv": {
+            "type": 101,
+            "param": ["matrix"],
+            "doc": "inverts non-singular matrix using LU decomposition"
+        },
+        "key": {
+            "type": 101,
+            "param": ["object_or_symbol"],
+            "doc": "Returns dictionary keys\nkeys of a keyed table\nfiles in a folder\nif a file exists\nif name is defined\ntype of vector\nenumerator of list\nif an integer, same thing as til"
+        },
+        "keys": {
+            "type": 101,
+            "param": ["table"],
+            "doc": "return primary key columns of table"
+        },
+        "xkey": {
+            "type": 100,
+            "param": [ "columns", "table" ],
+            "doc": "set columns as primary keys in table"
+        },
+        "lj": {
+            "type": 104,
+            "param": [ "table1", "table2" ],
+            "doc": "returns left join of table1 on table2, table2 should have keyed columns that match names in table1"
+        },
+        "ljf": {
+            "type": 104,
+            "param": [ "table1", "table2" ],
+            "doc": "returns left join of table1 on table2, table2 should have keyed columns that match names in table1"
+        },
+        "load": {
+            "type": 106,
+            "param": ["file_symbol"],
+            "doc": "load object from binary file_symbol, in directory recursively searches for objects"
+        },
+        "rload": {
+            "type": 106,
+            "param": ["directory_symbol"],
+            "doc": "load splayed table from binary directory_symbol"
+        },
+        "xlog": {
+            "type": 100,
+            "param": [ "base", "number" ],
+            "doc": "return the base logarithm of number, is infix function"
+        },
+        "lower": {
+            "type": 100,
+            "param": ["string_or_symbol"],
+            "doc": "return string or symbol to lowercase"
+        },
+        "upper": {
+            "type": 100,
+            "param": ["string_or_symbol"],
+            "doc": "return string or symbol to uppercase"
+        },
+        "lsq": {
+            "type": 102,
+            "param": [ "response_matrix", "design_matrix" ],
+            "doc": "returns the least squares solution that minimizes x - (x lsq y) mmu y; rows of design matrix should be independent; lsq uses Choleski decomposition"
+        },
+        "maxs": {
+            "type": 108,
+            "param": ["list"],
+            "doc": "return running maximums of list"
+        },
+        "mmax": {
+            "type": 100,
+            "param": [ "int", "list" ],
+            "doc": "return moving maximum of last int consecutive items in list"
+        },
+        "md5": {
+            "type": 104,
+            "param": ["string"],
+            "doc": "return as a byestream its MD5 (message-digest algorithm 5) hash"
+        },
+        "med": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "return median of list"
+        },
+        "meta": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "return meta data of table or table_symbol, meta data included column name c, data type t, foreign key f, attribute a"
+        },
+        "mins": {
+            "type": 108,
+            "param": ["list"],
+            "doc": "return running minimums of list"
+        },
+        "mmin": {
+            "type": 100,
+            "param": [ "int", "list" ],
+            "doc": "return moving minimum of last int consecutive items in list"
+        },
+        "mod": {
+            "type": 100,
+            "param": [ "nums", "bases" ],
+            "doc": "return nums mod bases, and is a multithreaded primitive, atomic function"
+        },
+        "null": {
+            "type": 101,
+            "param": ["number"],
+            "doc": "return negation of number, if null returns null"
+        },
+        "next": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "shifts list forward, last element is null since there is no next element"
+        },
+        "prev": {
+            "type": 109,
+            "param": ["list"],
+            "doc": "shifts list backward, first element is null since there is no previous element"
+        },
+        "xprev": {
+            "type": 100,
+            "param": [ "shift", "list" ],
+            "doc": "shifts list by shift amount, negative number shift forward first or last shift elements are null"
+        },
+        "not": {
+            "type": 101,
+            "param": [ "object" ],
+            "doc": "return 0b if object is not equal to zero, 1b otherwise, is an atomic function and a multithreaded primitive"
+        },
+        "null": {
+            "type": 101,
+            "param": [ "object" ],
+            "doc": "return 1b if object is null, is an atomic function and a multithreaded primitive"
+        },
+        "over": {
+            "type": 100,
+            "param": [ "function", "object" ],
+            "doc": "if function is univariate, keeps applying function until value stops changing, and output final result; if function is bivariate, and object is a list, applies function on consecutive values accumulating and return final result"
+        },
+        "scan": {
+            "type": 100,
+            "param": [ "function", "object" ],
+            "doc": "if function is univariate, keeps applying function until value stops changing, and output all intermediate result; if function is bivariate, and object is a list, applies function on consecutive values accumulating and return intermediate results"
+        },
+        "parse": {
+            "type": 100,
+            "param": ["expression"],
+            "doc": "if expression is a q-function returns the lambda, else returns the parse tree"
+        },
+        "pj": {
+            "type": 100,
+            "param": [ "table1", "table2" ],
+            "doc": "left join table1 and table2 on keyed common table2 columns, and sums values of common columns"
+        },
+        "prds": {
+            "type": 108,
+            "param": ["list"],
+            "doc": "return cumulative products of its items"
+        },
+        "prior": {
+            "type": 100,
+            "param": [ "function", "list" ],
+            "doc": "return list of results of function applied to each item and the item preceding it, function should be bivariate or more"
+        },
+        "rand": {
+            "type": 100,
+            "param": [ "list_or_atom" ],
+            "doc": "return random item in list or a random atom of same type"
+        },
+        "rank": {
+            "type": 100,
+            "param": [ "list" ],
+            "doc": "return the index of each item in ascending sort, i.e. first entry is the position of the first item in the list when sorted asc."
+        },
+        "ratios": {
+            "type": 109,
+            "param": ["list"],
+            "doc": "returns ratios between consecutive items of list"
+        },
+        "raze": {
+            "type": 107,
+            "param": ["list"],
+            "doc": "joins or concatenates all items of list and returns final result"
+        },
+        "read0": {
+            "type": 101,
+            "param": ["file_symbol_or_descriptor"],
+            "doc": "reads file as list of strings delimited by LF or CRLF and delimiters are removed\n with file descriptor (file;start;length), can control which chunks are read"
+        },
+        "read1": {
+            "type": 101,
+            "param": ["file_symbol_or_descriptor"],
+            "doc": "reads file as bytes, with file descriptor (file;start;length), can control which chunks are read"
+        },
+        "reciprocal": {
+            "type": 101,
+            "param": ["number"],
+            "doc": "returns the reciprocal of number, atomic and multithreaded primitive"
+        },
+        "reverse": {
+            "type": 101,
+            "param": ["object"],
+            "doc": "returns lists in reverse order, dictionaries with reverse key order and tables with reverse column order"
+        },
+        "rotate": {
+            "type": 100,
+            "param": ["shift" ,"object"],
+            "doc": "returns lists rotated by shift items, left for positive and right for negative\ndictionaries with rotates key order\ntables rotates column order"
+        },
+        "save": {
+            "type": 106,
+            "param": ["path/to/v.ext"],
+            "doc": "saves global variable v to path and depending on ext creates a different object, returns filename"
+        },
+        "rsave": {
+            "type": 106,
+            "param": ["table"],
+            "doc": "saves table splayed to directory"
+        },
+        "show": {
+            "type": 100,
+            "param": ["object"],
+            "doc": "formats object and displays it at the console stdout, returns identity function"
+        },
+        "signum": {
+            "type": 100,
+            "param": ["number"],
+            "doc": "returns sign of number, return -1 for nulls, is atomic and multithreaded primitive"
+        },
+        "ssr": {
+            "type": 100,
+            "param": [ "string", "pattern", "string_or_function" ],
+            "doc": "returns string where each matching pattern substring is replaced by string or function[matched_substring]"
+        },
+        "string": {
+            "type": 101,
+            "param": ["object"],
+            "doc": "returns object as a string, works on all datatypes, is atomic"
+        },
+        "sublist": {
+            "type": 100,
+            "param": [ "int_or_pair", "list" ],
+            "doc": "returns sublist of list by index int or pair (start; length), is guaranteed to be a subset"
+        },
+        "sums": {
+            "type": 108,
+            "param": ["list"],
+            "doc": "return cumulative sums of list items"
+        },
+        "msum": {
+            "type": 100,
+            "param": [ "int", "list" ],
+            "doc": "Moving sum of int items of list, is infix function"
+        },
+        "sv": {
+            "type": 100,
+            "param": [ "scalar", "list" ],
+            "doc": "Encode list with scalar:\nFor list of strings, joins string with delimiter scalar\nFor sym lists, joins into new symbol seperated by period when scalar is empty symbol, but for filepath components it seperates by /\nOn int lists, evaluates at base scalar\nFor byte or bits list, converts to integer"
+        },
+        "system": {
+            "type": 105,
+            "param": ["command_string"],
+            "doc": "executes kdb+ system command_string"
+        },
+        "tables": {
+            "type": 100,
+            "param": ["namespace_symbol"],
+            "doc": "returns list of tables as symbols in namespace"
+        },
+        "til": {
+            "type": 100,
+            "param": ["positive_integer"],
+            "doc": "returns list of the first n natural numbers, from 0 to n-1"
+        },
+        "trim": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "return list without leading and trailing nulls"
+        },
+        "ltrim": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "return list without leading nulls"
+        },
+        "rtrim": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "return list without trailing nulls"
+        },
+        "type": {
+            "type": 101,
+            "param": ["object"],
+            "doc": "return type of object as a short int"
+        },
+        "uj": {
+            "type": 100,
+            "param": [ "table1", "table2" ],
+            "doc": "if table1 and table2 have matching key columns, return table1 with table2 values filling with nulls\nelse insert table2 into table1 filling with nulls"
+        },
+        "ujf": {
+            "type": 100,
+            "param": [ "table1", "table2" ],
+            "doc": "if table1 and table2 have matching key columns, return table1 with table2 values filling with nulls\nelse insert table2 into table1 filling with nulls"
+        },
+        "union": {
+            "type": 105,
+            "param": [ "list1", "list2" ],
+            "doc": "return distinct union of items in list1 and list2, could also be atoms"
+        },
+        "ungroup": {
+            "type": 100,
+            "param": [ "table" ],
+            "doc": "if table has cells as list but for any row, the lists are the same length, returns normalized table with one row for each item of a lists"
+        },
+        "upsert": {
+            "type": 104,
+            "param": [ "table_or_symbol", "records" ],
+            "doc": "append or overwrite records to table or symbol of table name, returns new table"
+        },
+        "value": {
+            "type": 101,
+            "param": ["object"],
+            "doc": "returns value of object:\ndictionary: list of values\nsymbol atom: value of symbol in default namespace\nenumeration: corresponding symbol vector\nstring: evaluates string as code\nlist: calls first element with remaining as arguments\nprojection: function followed by arguments\ncompositions: list of composed values\nderived function: value of iterator\noperator: internal code\nview: list of metadata\nlambda: the structure\nfile symbol: content of datafile"
+        },
+        "svar": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "returns sample variance of list"
+        },
+        "view": {
+            "type": 100,
+            "param": ["view"],
+            "doc": "returns expression for the view"
+        },
+        "views": {
+            "type": 100,
+            "param": [],
+            "doc": "returns sorted list of views currently defined in default namespace"
+        },
+        "vs": {
+            "type": 100,
+            "param": [ "atom", "vector" ],
+            "doc": "partition a symbol, string or bytestream, or encode a vector from an atom or a matrix from a vector"
+        },
+        "where": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "if list is boolean, returns indices where 1\nif list of non-neg integers, returns list where index appears number of times equal to value something similar for keys in dictionary"
+        },
+        "wj": {
+            "type": 100,
+            "param": [ "timestamps", "common_column", "table1", "(table2;(agg1;col1);(agg2;col2))" ],
+            "doc": "window join"
+        },
+        "wj1": {
+            "type": 100,
+            "param": [ "timestamps", "common_column", "table1", "(table2;(agg1;col1);(agg2;col2))" ],
+            "doc": "window join"
+        },
+        "xbar": {
+            "type": 100,
+            "param": [ "base", "number_or_date" ],
+            "doc": "returns number rounded to the nearest multiple of base"
+        },
+        "xgroup": {
+            "type": 100,
+            "param": [ "columns", "table" ],
+            "doc": "returns table grouped by columns as primary keys"
+        },
+        "xrank": {
+            "type": 100,
+            "param": [ "bucket_count", "list" ],
+            "doc": "returns for each item in list the bucket it falls into, from 0 to bucket_count-1"
+        }
+    }
+}

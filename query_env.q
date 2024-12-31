@@ -10,8 +10,8 @@
 
  get_doc:{[namespace; variable]
   / creates a dictionary of documentation about VARIABLE in NAMESPACE
-  / get variable/function using eval
-  x: eval $[namespace=`; variable; `$".", (string namespace), ".", string variable];
+  / get variable/function using value
+  x: value $[namespace=`; variable; `$".", (string namespace), ".", string variable];
   t: type x;
   / helper function to get string body
   max_body: 100; / maximum length
@@ -26,7 +26,7 @@
    / is a lambda, give parameters, file and body excerpt
    t = 100; {[t;x;f] v:value x;
     result: `type`param`body! t,(enlist v[1]), enlist f (reverse v)[0];
-    if[0 < count (reverse v)[2]; result[`file]: (reverse v)[2]];
+    if[0 < count (reverse v)[2]; result[`file]: (reverse v)[2]; if[-1 <> count (reverse v)[1]; result[`line]: (reverse v)[1]]];
     :result }[t;x;truncate_string];
    / projection, composition, iteration
    t within (104;111); `type`body! t, enlist truncate_string .Q.s x;
