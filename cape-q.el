@@ -203,12 +203,12 @@ Auto completes variables and functions."
                                            (concat "." name))
                                          ;; remove first element with cdr
                                          (delete "" (hash-table-keys cape-q-session-vars)))))))
-      (setq cape-q--namespace namespace)
+      (setq cape-q--namespace (or namespace ""))
       (list begin
             end
             scandidates
             :annotation-function (lambda (cand)
-                                   (if-let* ((candidates (gethash (or cape-q--namespace "") cape-q-session-vars))
+                                   (if-let* ((candidates (gethash cape-q--namespace cape-q-session-vars))
                                              (doc (gethash cand candidates))
                                              (type (gethash "type" doc)))
                                        (cape-q-describe-type type)
@@ -216,7 +216,7 @@ Auto completes variables and functions."
                                      "namespace"))
             :company-doc-buffer
             (lambda (cand)
-              (when-let* ((candidates (gethash (or cape-q--namespace "") cape-q-session-vars))
+              (when-let* ((candidates (gethash cape-q--namespace cape-q-session-vars))
                           (doc (gethash cand candidates))
                           (docs (hash-table-keys doc)))
                 (with-current-buffer (get-buffer-create "*documentation*")
