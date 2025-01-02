@@ -12,6 +12,13 @@
 (defvar cape-q-session-vars (make-hash-table :size 5 :test 'equal)
   "Hashmap of namespaces:variable/function:documentation.")
 
+(defconst cape-q-builtin-vars (with-temp-buffer
+                                (insert-file-contents
+                                 (concat (file-name-directory load-file-name) "/" "builtins.json"))
+                                (goto-char (point-min))
+                                (json-parse-buffer))
+  "Hash table with builtin functions, variables and namespaces.")
+
 (defvar cape-q--temp-output ""
   "String variable to hold q process output. Used in `cape-q-json-output-filter'.")
 
@@ -192,54 +199,73 @@ Auto completes variables and functions."
                              var)
                         (match-string 1 var)))
            (begin (if namespace (+ begin 2 (length namespace)) begin))
-           (candidates (gethash (or namespace "") cape-q-session-vars))
-           (scandidates (append (when candidates (hash-table-keys candidates))
-                               ;; add namespaces to global namespace
-                               (unless namespace
-                                 (mapcar (lambda (name)
-                                           (concat "." name))
-                                         ;; remove first element with cdr
-                                         (delete "" (hash-table-keys cape-q-session-vars)))))))
-      (setq cape-q--namespace (or namespace ""))
+           (scandidates (append (if namespace
+                                    (hash-table-keys (or (gethash namespace cape-q-session-vars)
+                                                         (gethash namespace cape-q-builtin-vars)))
+                                  ;; default namespace
+                                  (append (hash-table-keys (gethash "" cape-q-session-vars))
+                                          (hash-table-keys (gethash "" cape-q-builtin-vars))
+                                          (hash-table-keys (gethash "q" cape-q-builtin-vars))))
+                                ;; add namespaces to global namespace
+                                (unless namespace
+                                  (mapcar (lambda (name)
+                                            (concat "." name))
+                                          ;; remove empty string namespace
+                                          (delete "" (append (hash-table-keys cape-q-session-vars)
+                                                             (hash-table-keys cape-q-builtin-vars))))))))
+      (setq cape-q--namespace namespace)
       (list begin
             end
             scandidates
-            :annotation-function (lambda (cand)
-                                   (if-let* ((candidates (gethash cape-q--namespace cape-q-session-vars))
-                                             (doc (gethash cand candidates))
-                                             (type (gethash "type" doc)))
-                                       (cape-q-describe-type type)
-                                     ;; it has to be a namespace if missing
-                                     "namespace"))
+            :annotation-function
+            (lambda (cand)
+              (format " %s"
+                      (if-let* ((doc (if cape-q--namespace
+                                         (gethash cand (or (gethash cape-q--namespace cape-q-session-vars)
+                                                           (gethash cape-q--namespace cape-q-builtin-vars)))
+                                       (or (gethash cand (gethash "" cape-q-session-vars))
+                                           (gethash cand (gethash "" cape-q-builtin-vars))
+                                           (gethash cand (gethash "q" cape-q-builtin-vars)))))
+                                (type (gethash "type" doc)))
+                          (cape-q-describe-type type)
+                        ;; it has to be a namespace if missing
+                        "namespace")))
             :company-doc-buffer
             (lambda (cand)
-              (when-let* ((candidates (gethash cape-q--namespace cape-q-session-vars))
-                          (doc (gethash cand candidates))
+              (when-let* ((doc (if cape-q--namespace
+                                   (gethash cand (or (gethash cape-q--namespace cape-q-session-vars)
+                                                     (gethash cape-q--namespace cape-q-builtin-vars)))
+                                 (or (gethash cand (gethash "" cape-q-session-vars))
+                                     (gethash cand (gethash "" cape-q-builtin-vars))
+                                     (gethash cand (gethash "q" cape-q-builtin-vars)))))
                           (docs (hash-table-keys doc))
-                          (body (mapconcat #'identity
-                                           (list
-                                            (when (member "type" docs)
-                                              (format "%s is a %s." cand (cape-q-describe-type (gethash "type" doc))))
-                                            (when (member "doc" docs)
-                                              (format "%s" (gethash "doc" docs)))
-                                            (when (member "cols" docs)
-                                              ;; cols is converted to a vector
-                                              (format "Table Columns:\n%s"
-                                                      (mapconcat #'identity (gethash "cols" doc) ", ")))
-                                            (when (member "keys" docs)
-                                              ;; keys is converted to a vector
-                                              (format "Dictionary Keys:\n%s"
-                                                      (mapconcat #'identity (gethash "keys" doc) ", ")))
-                                            (when (member "param" docs)
-                                              ;; params is converted to a vector
-                                              (format "Function Parameters Names:\n%s"
-                                                      (mapconcat #'identity (gethash "param" doc) ", ")))
-                                            (when (member "file" docs)
-                                              (concat (format "Function source file: %s" (gethash "file" doc))
-                                                      (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
-                                            (when (member "body" docs)
-                                              (format "Function Body:\n%s" (gethash "body" doc))))
-                                           "\n\n")))
+                          (body (mapconcat
+                                 #'identity
+                                 (delete
+                                  nil
+                                  (list
+                                   (when (member "type" docs)
+                                     (format "%s is a %s." cand (cape-q-describe-type (gethash "type" doc))))
+                                   (when (member "doc" docs)
+                                     (format "%s" (gethash "doc" doc)))
+                                   (when (member "cols" docs)
+                                     ;; cols is converted to a vector
+                                     (format "Table Columns:\n%s"
+                                             (mapconcat #'identity (gethash "cols" doc) ", ")))
+                                   (when (member "keys" docs)
+                                     ;; keys is converted to a vector
+                                     (format "Dictionary Keys:\n%s"
+                                             (mapconcat #'identity (gethash "keys" doc) ", ")))
+                                   (when (member "param" docs)
+                                     ;; params is converted to a vector
+                                     (format "Function Parameters Names:\n%s"
+                                             (mapconcat #'identity (gethash "param" doc) ", ")))
+                                   (when (member "file" docs)
+                                     (concat (format "Function source file: %s" (gethash "file" doc))
+                                             (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
+                                   (when (member "body" docs)
+                                     (format "Function Body:\n%s" (gethash "body" doc)))))
+                                 "\n\n")))
                 (with-current-buffer (get-buffer-create "*documentation*")
                   (erase-buffer)
                   (fundamental-mode)
