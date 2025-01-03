@@ -74,8 +74,9 @@
   "Hashmap that maps q-type integers to strings.")
 
 (defun cape-q-describe-type (type)
-  "Return descriptive string for q integer TYPE."
+  "Return descriptive string for q integer or string TYPE."
   (cond
+   ((stringp type) type)
    ((<= 1 type 19) (concat "list of " (gethash (- type) cape-q-type-hashmap)))
    ((<= 78 type 96) (concat "mapped list of lists of type " (gethash (- type 77) cape-q-type-hashmap)))
    ((<= 20 type 76) "enums")
@@ -120,9 +121,7 @@ or handle name."
         (add-hook 'comint-preoutput-filter-functions #'cape-q-json-output-filter 0 t)
         (save-excursion
           (goto-char (point-max))
-          (insert "1 "
-                  full-body
-                  ";")
+          (insert "1 " full-body ";")
           (comint-send-input nil t))))
      (t (let* ((handle (if-let* ((buffer (get-buffer session))
                                  (name (with-current-buffer buffer
@@ -233,9 +232,7 @@ Auto completes variables and functions."
                                            (when (gethash "" cape-q-session-vars)
                                              (gethash cand (gethash "" cape-q-session-vars))))))
                                 (type (gethash "type" doc)))
-                          (cond
-                           ((stringp type) type)
-                           ((integerp type) (cape-q-describe-type type)))
+                          (cape-q-describe-type type)
                         (if (string-match-p "^\\..*$" cand)
                             "namespace"
                           "any"))))
@@ -254,10 +251,7 @@ Auto completes variables and functions."
                                   nil
                                   (list
                                    (when (member "type" docs)
-                                     (format "%s is a %s." cand (let* ((type (gethash "type" doc)))
-                                                                  (cond
-                                                                   ((stringp type) type)
-                                                                   ((integerp type) (cape-q-describe-type type))))))
+                                     (format "%s is a %s." cand (cape-q-describe-type (gethash "type" doc))))
                                    (when (member "doc" docs)
                                      (format "%s" (gethash "doc" doc)))
                                    (when (member "cols" docs)
@@ -331,11 +325,9 @@ If it cannot match a valid variable it will give begin and end bounds at point."
                          (when (gethash "" cape-q-session-vars)
                            (gethash thing (gethash "" cape-q-session-vars))))))
               (entries (hash-table-keys doc))
-              (type-string (let* ((type (gethash "type" doc)))
-                             (cond
-                              ((stringp type) type)
-                              ((integerp type) (cape-q-describe-type type))
-                              (t "any")))))
+              (type-string (if-let* ((type (gethash "type" doc)))
+                               (cape-q-describe-type type)
+                             "any")))
     (funcall
      callback
      ;; first use function params
