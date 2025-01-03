@@ -309,5 +309,59 @@ If it cannot match a valid variable it will give begin and end bounds at point."
            (end (or end initial)))
       (cons begin end))))
 
+(defun cape-q-eldoc (callback &rest _ignored)
+  "Print q var documentation by calling CALLBACK."
+  ;; the callback is just message when interactive
+  (interactive (list #'message))
+  (when-let* ((bounds (and (hash-table-p cape-q-session-vars)
+                           ;; do not trigger inside comments and strings
+                           (not (nth 3 (syntax-ppss)))
+                           (not (nth 4 (syntax-ppss)))
+                           (cape-q--bounds)))
+              (thing (buffer-substring-no-properties (car bounds) (cdr bounds)))
+              (doc (if (string-match
+                        "\\.\\([a-zA-Z][a-zA-Z0-9_]*\\(\\.[a-zA-Z0-9_]+\\)*\\)\\.\\([a-zA-Z0-9_]+\\)"
+                        thing)
+                       (let* ((namespace (match-string 1 thing))
+                              (var (substring thing (+ 2 (length namespace)))))
+                         (gethash var (or (gethash namespace cape-q-session-vars)
+                                          (gethash namespace cape-q-builtin-vars))))
+                     (or (gethash thing (gethash "" cape-q-builtin-vars))
+                         (gethash thing (gethash "q" cape-q-builtin-vars))
+                         (when (gethash "" cape-q-session-vars)
+                           (gethash thing (gethash "" cape-q-session-vars))))))
+              (entries (hash-table-keys doc))
+              (type-string (let* ((type (gethash "type" doc)))
+                             (cond
+                              ((stringp type) type)
+                              ((integerp type) (cape-q-describe-type type))
+                              (t "any")))))
+    (funcall
+     callback
+     ;; first use function params
+     (cond ((member "param" entries)
+            (format "%s: param:(%s)"
+                    type-string
+                    (mapconcat #'identity (gethash "param" doc) "; ")))
+           ;; then give table columns
+           ((member "cols" entries)
+            (format "%s: cols:(%s)"
+                    type-string
+                    (mapconcat #'identity (gethash "cols" doc) "; ")))
+           ;; dictionary keys
+           ((member "keys" entries)
+            (format "%s: keys:(%s)"
+                    type-string
+                    (mapconcat #'identity (gethash "keys" doc) "; ")))
+           ((member "doc" entries)
+            (format "%s: :%s"
+                    type-string
+                    (gethash "doc" doc)))
+           (t (format "%s"
+                      type-string)))
+     :thing thing)))
+
+(add-hook 'q-mode-hook (lambda () (add-hook 'eldoc-documentation-functions #'cape-q-eldoc nil t)))
+
 (provide 'cape-q)
 ;;; cape-q.el ends here
