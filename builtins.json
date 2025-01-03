@@ -124,7 +124,7 @@
             "doc": "Reference to self function"
         },
         "ts": {
-            "doc": "Custom Function run on timer \t"
+            "doc": "Custom Function run on timer \\t"
         },
         "u": {
             "type": -11,
@@ -1472,6 +1472,218 @@
         "x": {
             "type": 0,
             "doc": "non-command parameters\nset by .Q.opt, a list a non-command parameters from the command line, where command parameters are prefixed by -"
+        }
+    },
+
+    "h": {
+        "br": {
+            "type": 10,
+            "doc": "linebreak"
+        },
+        "c0": {
+            "type": -11,
+            "doc": "web color"
+        },
+        "c1": {
+            "type": -11,
+            "doc": "web color"
+        },
+        "cd": {
+            "type": 100,
+            "param": ["table_or_list"],
+            "doc": "CSV from data\nreturns a string of csv values"
+        },
+        "code": {
+            "type": 100,
+            "param": ["string"],
+            "doc": "code after Tab\nencloses tab in string with code and nobr"
+        },
+        "d": {
+            "type": -10,
+            "doc": "delimiter"
+        },
+        "ed": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "Excel from data\nreturn table as string XML for excel workbook"
+        },
+        "edsn": {
+            "type": 100,
+            "param": [ "symbols!tables" ],
+            "doc": "Excel from tables\nreturn as a list of strings an XML document describing an Excel spreadshee"
+        },
+        "fram": {
+            "type": 100,
+            "param": [ "title_string", "list_of_string", "(left;right)" ],
+            "doc": "frame\nreturns as a string an HTML page with two frames in a frameset wide enough to accomodate the lines of s"
+        },
+        "ha": {
+            "type": 100,
+            "param": [ "href_att_symbol", "link_text_string" ],
+            "doc": "anchor\nreturns as a string an HTML a href element"
+        },
+        "hb": {
+            "type": 100,
+            "param": [ "href_att_symbol", "link_text_string" ],
+            "doc": "anchor target\nreturns as a string an HTML a href element but also adds target=v to the tag"
+        },
+        "hc": {
+            "type": 100,
+            "param": ["string"],
+            "doc": "escape lt\nreturns string with any \"<\" character escaped"
+        },
+        "he": {
+            "type": 105,
+            "param": ["string"],
+            "doc": "HTTP 400\nreturns string with any \"<\" character escaped, adds a \"'\" at the front and returns a HTTP 400 error with that content"
+        },
+        "hn": {
+            "type": 104,
+            "param": [ "status_code_string", "content_type_symbol", "content_string" ],
+            "doc": "HTTP response\nreturn as a string an HTTP error response"
+        },
+        "hp": {
+            "type": 105,
+            "param": ["strings"],
+            "doc": "HTTP response pre\nreturns as a string a valid HTTP response displaying them as a pre element in an HTML document"
+        },
+        "hr": {
+            "type": 100,
+            "param": ["string"],
+            "doc": "horizontal rule\nreturns a string of the same length filled with \"-\""
+        },
+        "ht": {
+            "type": 100,
+            "param": ["document_name_symbol"],
+            "doc": "Marqdown to HTML\ngenerates htm file from symbol.txt"
+        },
+        "hta": {
+            "type": 100,
+            "param": [ "element_symbol", "attribute_val_dict"],
+            "doc": "start tag\nreturn as a string an opening HTML tag for element_symbol"
+        },
+        "htac": {
+            "type": 100,
+            "param": [ "element_symbol", "attribute_val_dict", "content" ],
+            "doc": "element\nreturn html element"
+        },
+        "htc": {
+            "type": 100,
+            "param": [ "HTML_doc_string" ],
+            "doc": "document\nreturn HTML document with fixed style rules"
+        },
+        "http": {
+            "type": 100,
+            "param": [ "string" ],
+            "doc": "hyperlinks\nreturns string with embedded URLs beginning in \"http://\" with href"
+        },
+        "hu": {
+            "type": 105,
+            "param": [ "string" ],
+            "doc": "URI escape\nreturn strign with URI-unsafe characters replaced with safe equivalents"
+        },
+        "hug": {
+            "type": 100,
+            "param": [ "char_vector" ],
+            "doc": "URI map"
+        },
+        "hy": {
+            "type": 104,
+            "param": [ "type_symbol", "string" ],
+            "doc": "HTTP response content\nreturns as a string an HTTP response for string as content type symbol"
+        },
+        "HOME": {
+            "type": 10,
+            "doc": "webserver root\nlocation of the webserver root"
+        },
+        "iso8601": {
+            "type": 100,
+            "param": ["nanosec_int"],
+            "doc": "ISO timestamp\nwhere input is the nanoseconds since 2000.01.01 as an int atom, return string as a timestamp in ISO-8601 format"
+        },
+        "jx": {
+            "type": 100,
+            "param": [ "start_row", "table_name_symbol" ],
+            "doc": "table\nreturns a list of string representing table from start row"
+        },
+        "ka": {
+            "type": 104,
+            "param": [ "idle_timeout_int" ],
+            "doc": "HTTP keepalive"
+        },
+        "logo": {
+            "type": 10,
+            "doc": "KX logo"
+        },
+        "nbr": {
+            "type": 104,
+            "param": ["string"],
+            "doc": "no break\nreturn string as content of a nobr element"
+        },
+        "pre": {
+            "type": 104,
+            "param": ["string_list"],
+            "doc": "pre\nreturn strings as content of a pre element with embedded new lines"
+        },
+        "sa": {
+            "type": 10,
+            "doc": "anchor style\nCSS style rules used in the web console for anchor elements"
+        },
+        "sb": {
+            "type": 10,
+            "doc": "body-style\nCSS style rules used in the web console for the HTML body"
+        },
+        "sc": {
+            "type": 10,
+            "doc": "URI-safe\ncharacters that do not need to be escaped in URIs"
+        },
+        "td": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "TSV from data\nreturn table as a list of tab-separated value strings"
+        },
+        "text": {
+            "type": 100,
+            "param": ["string_list"],
+            "doc": "paragraphs\nreturn as a string with each item as a content of a p element"
+        },
+        "tx": {
+            "type": 99,
+            "doc": "filetypes\nDictionary of file types and corresponding conversion functions"
+        },
+        "ty": {
+            "type": 99,
+            "doc": "MIME types\nDictionary of content types and corresponding media types."
+        },
+        "uh": {
+            "type": 100,
+            "param": [ "string" ],
+            "doc": "URI unescape\nreturns string with %xx hex sequences replaced with character equivalents."
+        },
+        "val": {
+            "type": 101,
+            "param": [ "request" ],
+            "doc": "value\n.h.val is called by .z.ph to evaluate a request to the server."
+        },
+        "xd": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "XML\nreturn table as an XML table as a list of strings"
+        },
+        "xmp": {
+            "type": 100,
+            "param": ["string_list"],
+            "doc": "XMP\nreturns as a string x as the newline-separated content of an HTML xmp element"
+        },
+        "xs": {
+            "type": 104,
+            "param": ["string"],
+            "doc": "XML escape\nreturns string with characters XML-escaped when necessary"
+        },
+        "xt": {
+            "type": 100,
+            "param": [ "`json", "json_string_lists" ],
+            "doc": "JSON\nreturns a dictionary for each json_string"
         }
     }
 }
