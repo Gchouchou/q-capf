@@ -166,7 +166,7 @@ It stores the temporary string in `cape-q--temp-output' and then puts
     (setq cape-q--temp-output (concat cape-q--temp-output (substring output 0 nline-index)))
     (if-let* ((nline-index)
               (table (condition-case nil
-                          (json-parse-string cape-q--temp-output)
+                          (json-parse-string (replace-regexp-in-string comint-prompt-regexp "" cape-q--temp-output))
                         ;; we should get a hashtable, instead give t so we pass if-let
                         (t t))))
         (prog1
