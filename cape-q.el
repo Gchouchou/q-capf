@@ -189,7 +189,10 @@ It stores the temporary string in `cape-q--temp-output' and then puts
 
 Auto completes variables and functions."
   (interactive)
-  (when cape-q-session-vars
+  (when (and (hash-table-p cape-q-session-vars)
+             ;; do not trigger inside comments and strings
+             (not (nth 3 (syntax-ppss)))
+             (not (nth 4 (syntax-ppss))))
     (let* ((bounds (cape-q--bounds))
            (begin (car bounds))
            (end (cdr bounds))
