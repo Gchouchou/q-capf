@@ -91,7 +91,18 @@ If SESSION is not nil, scrape from SESSION instead, buffer or buffer string
 or handle name."
   (interactive "P")
   ;; default to q-active-buffer
-  (let* ((session (or session q-active-buffer)))
+  (let* ((session (or session q-active-buffer))
+         (param (format "[%s;%s]"
+                          (if only_global 1 0)
+                          (pcase (length cape-q-excluded-namespaces)
+                            (0 "()")
+                            (1 (format "enlist `%s" (car cape-q-excluded-namespaces)))
+                            (_ (format "(%s)"
+                                       (mapconcat (lambda (namespace)
+                                                    (format "`%s" namespace))
+                                                  cape-q-excluded-namespaces
+                                                  ";"))))))
+         (full-body (concat cape-q-function param ", \"\\n\"")))
     (cond
      ((not (or (bufferp session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
      ((and (get-buffer session) (not (comint-check-proc (get-buffer session)))
@@ -110,18 +121,8 @@ or handle name."
         (save-excursion
           (goto-char (point-max))
           (insert "1 "
-                  cape-q-function
-                  (format "[%s;%s]"
-                          (if only_global 1 0)
-                          (pcase (length cape-q-excluded-namespaces)
-                            (0 "()")
-                            (1 (format "enlist `%s" (car cape-q-excluded-namespaces)))
-                            (_ (format "(%s)"
-                                       (mapconcat (lambda (namespace)
-                                                    (format "`%s" namespace))
-                                                  cape-q-excluded-namespaces
-                                                  ";")))))
-                  ", \"\\n\";")
+                  full-body
+                  ";")
           (comint-send-input nil t))))
      (t (let* ((handle (if-let* ((buffer (get-buffer session))
                                  (name (with-current-buffer buffer
@@ -130,19 +131,19 @@ or handle name."
                            (match-string 1 name)
                          session))
                ;; first escape \ with \\
-               (body (replace-regexp-in-string
-                      "\\\\" "\\\\"
-                      cape-q-function nil t))
+               (escaped-body (replace-regexp-in-string
+                              "\\\\" "\\\\"
+                              full-body nil t))
                ;; escape apostrophe " with \"
-               (body (replace-regexp-in-string
-                      "\"" "\\\""
-                      body nil t))
+               (escaped-body (replace-regexp-in-string
+                              "\"" "\\\""
+                              escaped-body nil t))
                (file (make-temp-file "q-scrape-" nil ".q"
-                                     (format "1 `$\":%s\" \"%s\";"
+                                     (format "1 (`$\":%s\") \"%s\";"
                                              handle
-                                             body)))
+                                             escaped-body)))
                (table (with-temp-buffer
-                         (call-process q-program nil (current-buffer) nil "-q" file)
+                         (call-process q-program nil (current-buffer) nil file "-q")
                          (goto-char (point-min))
                          (json-parse-buffer))))
           (message "using handle: %s" handle)
@@ -188,7 +189,7 @@ It stores the temporary string in `cape-q--temp-output' and then puts
 
 Auto completes variables and functions."
   (interactive)
-  (when (hash-table-p cape-q-session-vars)
+  (when cape-q-session-vars
     (let* ((bounds (cape-q--bounds))
            (begin (car bounds))
            (end (cdr bounds))
@@ -203,7 +204,8 @@ Auto completes variables and functions."
                                     (hash-table-keys (or (gethash namespace cape-q-session-vars)
                                                          (gethash namespace cape-q-builtin-vars)))
                                   ;; default namespace
-                                  (append (hash-table-keys (gethash "" cape-q-session-vars))
+                                  (append (when (gethash "" cape-q-session-vars)
+                                            (hash-table-keys (gethash "" cape-q-session-vars)))
                                           (hash-table-keys (gethash "" cape-q-builtin-vars))
                                           (hash-table-keys (gethash "q" cape-q-builtin-vars))))
                                 ;; add namespaces to global namespace
@@ -223,23 +225,25 @@ Auto completes variables and functions."
                       (if-let* ((doc (if cape-q--namespace
                                          (gethash cand (or (gethash cape-q--namespace cape-q-session-vars)
                                                            (gethash cape-q--namespace cape-q-builtin-vars)))
-                                       (or (gethash cand (gethash "" cape-q-session-vars))
-                                           (gethash cand (gethash "" cape-q-builtin-vars))
-                                           (gethash cand (gethash "q" cape-q-builtin-vars)))))
+                                       (or (gethash cand (gethash "" cape-q-builtin-vars))
+                                           (gethash cand (gethash "q" cape-q-builtin-vars))
+                                           (when (gethash "" cape-q-session-vars)
+                                             (gethash cand (gethash "" cape-q-session-vars))))))
                                 (type (gethash "type" doc)))
                           (cond
                            ((stringp type) type)
                            ((integerp type) (cape-q-describe-type type)))
-                        ;; it has to be a namespace if missing
-                        "namespace")))
+                        (if (string-match-p "^\\..*$" cand)
+                            "namespace"
+                          "any"))))
             :company-doc-buffer
             (lambda (cand)
               (when-let* ((doc (if cape-q--namespace
                                    (gethash cand (or (gethash cape-q--namespace cape-q-session-vars)
                                                      (gethash cape-q--namespace cape-q-builtin-vars)))
-                                 (or (gethash cand (gethash "" cape-q-session-vars))
-                                     (gethash cand (gethash "" cape-q-builtin-vars))
-                                     (gethash cand (gethash "q" cape-q-builtin-vars)))))
+                                 (or (gethash cand (gethash "" cape-q-builtin-vars))
+                                     (gethash cand (gethash "q" cape-q-builtin-vars))
+                                     (gethash cand (gethash "" cape-q-session-vars)))))
                           (docs (hash-table-keys doc))
                           (body (mapconcat
                                  #'identity
