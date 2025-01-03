@@ -227,7 +227,9 @@ Auto completes variables and functions."
                                            (gethash cand (gethash "" cape-q-builtin-vars))
                                            (gethash cand (gethash "q" cape-q-builtin-vars)))))
                                 (type (gethash "type" doc)))
-                          (cape-q-describe-type type)
+                          (cond
+                           ((stringp type) type)
+                           ((integerp type) (cape-q-describe-type type)))
                         ;; it has to be a namespace if missing
                         "namespace")))
             :company-doc-buffer
@@ -245,7 +247,10 @@ Auto completes variables and functions."
                                   nil
                                   (list
                                    (when (member "type" docs)
-                                     (format "%s is a %s." cand (cape-q-describe-type (gethash "type" doc))))
+                                     (format "%s is a %s." cand (let* ((type (gethash "type" doc)))
+                                                                  (cond
+                                                                   ((stringp type) type)
+                                                                   ((integerp type) (cape-q-describe-type type))))))
                                    (when (member "doc" docs)
                                      (format "%s" (gethash "doc" doc)))
                                    (when (member "cols" docs)
@@ -258,8 +263,10 @@ Auto completes variables and functions."
                                              (mapconcat #'identity (gethash "keys" doc) ", ")))
                                    (when (member "param" docs)
                                      ;; params is converted to a vector
-                                     (format "Function Parameters Names:\n%s"
-                                             (mapconcat #'identity (gethash "param" doc) ", ")))
+                                     (if (< 0 (length (gethash "param" doc)))
+                                         (format "Function Parameters Names:\n%s"
+                                                 (mapconcat #'identity (gethash "param" doc) ", "))
+                                       "Function takes in no parameters"))
                                    (when (member "file" docs)
                                      (concat (format "Function source file: %s" (gethash "file" doc))
                                              (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))

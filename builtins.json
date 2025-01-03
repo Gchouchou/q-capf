@@ -380,6 +380,26 @@
             "type": 102,
             "param": [ "atom_or_list", "bounds" ],
             "doc": "returns if atom or each item of list is within or equal to bounds"
+        },
+        "last": {
+            "type": 101,
+            "param": ["list"],
+            "doc": "return last item of list or dictionary"
+        },
+        "do": {
+            "type": "control constuct",
+            "param": [ "count", "expression1", "expression2..." ],
+            "doc": "evaluate expression1 expression2 and etc count number of times, returns generic null"
+        },
+        "if": {
+            "type": "control construct",
+            "param": [ "test", "expression1", "expression2..." ],
+            "doc": "if test expression evaluates to 1, evaluates expression1, expression2, etc... returns generic null"
+        },
+        "while": {
+            "type": "control construct",
+            "param": [ "test", "expression1", "expression2..." ],
+            "doc": "unless test expression evaluates to 0, repeatedly evaluates expression1, expression2, etc... returns generic null"
         }
     },
 
@@ -413,11 +433,6 @@
             "type": 105,
             "param": [ "object" ],
             "doc": "if list has an non-zero, a non-zero atom"
-        },
-        "and": {
-            "type": 102,
-            "param": [ "left", "right" ],
-            "doc": "Lesser of left and right"
         },
         "asc": {
             "type": 100,
@@ -612,11 +627,6 @@
             "param": ["list"],
             "doc": "return first item of list or dictionary"
         },
-        "last": {
-            "type": 101,
-            "param": ["list"],
-            "doc": "return last item of list or dictionary"
-        },
         "fkeys": {
             "type": 100,
             "param": ["table"],
@@ -627,10 +637,10 @@
             "param": [ "object" ],
             "doc": "Transposes object, could be list of lists, dictionary or table"
         },
-        "ceiling": {
+        "floor": {
             "type": 101,
             "param": ["list"],
-            "doc": "Least integer less than or equal to boolean or numeric in list, is an atomic function"
+            "doc": "Greatest integer less than or equal to boolean or numeric in list, is an atomic function"
         },
         "get": {
             "type": 101,
@@ -792,7 +802,7 @@
             "param": [ "nums", "bases" ],
             "doc": "return nums mod bases, and is a multithreaded primitive, atomic function"
         },
-        "null": {
+        "neg": {
             "type": 101,
             "param": ["number"],
             "doc": "return negation of number, if null returns null"
@@ -1061,6 +1071,407 @@
             "type": 100,
             "param": [ "bucket_count", "list" ],
             "doc": "returns for each item in list the bucket it falls into, from 0 to bucket_count-1"
+        }
+    },
+
+    "Q": {
+        "A": {
+            "type": 10,
+            "doc": "upper-case alphabet"
+        },
+        "a": {
+            "type": 10,
+            "doc": "lower-case alphabet"
+        },
+        "an": {
+            "type": 10,
+            "doc": "all alphanumerics"
+        },
+        "addmonths": {
+            "type": 100,
+            "param": [ "date", "months" ],
+            "doc": "return date + number of months"
+        },
+        "addr": {
+            "type": 104,
+            "param": [ "hostname_symbol" ],
+            "doc": "return hostname symbol as an integer"
+        },
+        "b6": {
+            "type": 10,
+            "doc": "upper- and lower-case alphabet and numerics"
+        },
+        "bt": {
+            "type": 100,
+            "param": [],
+            "doc": "echo backtrace to stout"
+        },
+        "btoa": {
+            "type": 104,
+            "param": ["string"],
+            "doc": "return b64 encode"
+        },
+        "bv": {
+            "type": 100,
+            "param": ["optional"],
+            "doc": "construct dictionary .Q.vp of table schemas for tables wtih missing partitions.\nWith argument, use prototype from first partition instead of last"
+        },
+        "bvi": {
+            "type": 100,
+            "param": ["optional"],
+            "doc": "same as .Q.bv but scans only new partitions"
+        },
+        "chk": {
+            "type": 100,
+            "param": ["HDB_filepath"],
+            "doc": "fill HDB\nfills tables missing from partitions using the most recent partition as template"
+        },
+        "cn": {
+            "type": 100,
+            "param": ["partitioned_table"],
+            "doc": "return count partitioned table\nPopulates .Q.pn cache"
+        },
+        "D": {
+            "type": 0,
+            "doc": "In segmented DBs, return a list of the partitions, conformant to .Q.P"
+        },
+        "dd": {
+            "type": 100,
+            "param": [ "symbol", "symbol_or_string" ],
+            "doc": "returns joined symbol and symbol or string, shorthand for ` sv x, `$string y"
+        },
+        "def": {
+            "type": 100,
+            "param": [ "default_parameter_dictionary", "output_of_.Q.opt[.z.x]" ],
+            "doc": "merges default parameter dictionary with second argument which is the output of .Q.opt .z.x"
+        },
+        "dpft": {
+            "type": 104,
+            "param": [ "directory_handle", "partition", "field", "table_or_symbol" ],
+            "doc": "save table"
+        },
+        "dpfts": {
+            "type": 100,
+            "param": [ "directory_handle", "partition", "field", "table_or_symbol", "symtable_handle" ],
+            "doc": "save table with symtable"
+        },
+        "dpt": {
+            "type": 104,
+            "param": [ "directory_handle", "partition", "table_or_symbol" ],
+            "doc": "save table unsorted"
+        },
+        "dpt": {
+            "type": 100,
+            "param": [ "directory_handle", "partition", "table_or_symbol", "symtable_handle" ],
+            "doc": "save table unsorted with symtable"
+        },
+        "dsftg": {
+            "type": 100,
+            "param": [ "(dst;part;table)", "(src;offset;length)", "fields", "(types;widths)", "post-processing" ],
+            "doc": "load process save"
+        },
+        "en": {
+            "type": 104,
+            "param": [ "symbol_folder", "table" ],
+            "doc": "enumerate varchar cols"
+        },
+        "ens": {
+            "type": 104,
+            "param": [ "symbol_folder", "table", "symfile_symbol" ],
+            "doc": "enumerate varchar cols against domain"
+        },
+        "f": {
+            "type": 100,
+            "param": [ "precision", "number" ],
+            "doc": "return number formatted as float to precision decimal places"
+        },
+        "fc": {
+            "type": 100,
+            "param": [ "unary_atomic_func", "list" ],
+            "doc": "returns result of function on each item in list, uses parallel execution"
+        },
+        "ff": {
+            "type": 100,
+            "param": [ "table", "new_columns" ],
+            "doc": "returns table with new columns with all nulls, if column name already in table, does not do anything"
+        },
+        "fk": {
+            "type": 100,
+            "param": ["table_column"],
+            "doc": "return ` if column is not a foreign key or table as symbol"
+        },
+        "fmt": {
+            "type": 100,
+            "param": [ "length", "decimal_places", "number" ],
+            "doc": "return number as string of length characters with exactly decimal places"
+        },
+        "fpn": {
+            "type": 100,
+            "param": [ "function", "filepath_to_fifo", "chunk_size" ],
+            "doc": "reads chunks of complete \\n delimited records from pipe and applies function to each record."
+        },
+        "fps": {
+            "type": 104,
+            "param": [ "function", "filepath_to_fifo" ],
+            "doc": "reads chunks of size 131000 bytes complete \\n delimited records from pipe and applies function to each record."
+        },
+        "fsn": {
+            "type": 100,
+            "param": [ "function", "filepath", "chunk_size" ],
+            "doc": "reads chunks of complete \\n delimited records from file and applies function to each record."
+        },
+        "fs": {
+            "type": 104,
+            "param": [ "function", "filepath" ],
+            "doc": "reads chunks of size 131000 bytes complete \\n delimited records from file and applies function to each record."
+        },
+        "ft": {
+            "type": 100,
+            "param": [ "unary_function_for_simple_table", "keyed_table" ],
+            "doc": "apply simple\napplies function for simple table to keyed table and returns table with as many key columns as keyed_table"
+        },
+        "fu": {
+            "type": 100,
+            "param": [ "unary_function", "list" ],
+            "doc": "apply unique\napplies unary_function to distinct elements of list then populates the list assuming it is a true function."
+        },
+        "gc": {
+            "type": 104,
+            "param": [],
+            "doc": "garbage collects and returns the amount of bits freed"
+        },
+        "gz": {
+            "type": 104,
+            "param": ["meta"],
+            "doc": "GZip\nif meta is ::, returns if zlib is loaded\nif meta is a string, returns unzipped string\nif meta is ( compression level; string ) returns zipped string with compression level"
+        },
+        "hdpf": {
+            "type": 100,
+            "param": [ "historicalport", "directory", "partition", "`p#field" ],
+            "doc": "save tables"
+        },
+        "hg": {
+            "type": 100,
+            "param": ["URL_symbol"],
+            "doc": "returns result of HTTP[S] GET query at URL"
+        },
+        "host": {
+            "type": 104,
+            "param": ["int_IP_address"],
+            "doc": "returns int IP address as symbol"
+        },
+        "hp": {
+            "type": 100,
+            "param": [ "URL_symbol", "MIME_string", "POST_query_string" ],
+            "doc": "HTTP post request"
+        },
+        "id": {
+            "type": 100,
+            "param": ["object"],
+            "doc": "Sanitize symbols of improper q names"
+        },
+        "ind": {
+            "type": 100,
+            "param": [ "partitioned_table", "max_rows" ],
+            "doc": "return partitioned table with only max number of rows"
+        },
+        "j10": {
+            "type": 105,
+            "param": ["string"],
+            "doc": "return string encoded as binhex, the alphabet .Q.b6"
+        },
+        "j12": {
+            "type": 105,
+            "param": ["string"],
+            "doc": "return string encoded as base 36, the alphabet .Q.nA"
+        },
+        "x10": {
+            "type": 105,
+            "param": ["string"],
+            "doc": "return decoded binhex string, the alphabet .Q.b6"
+        },
+        "x12": {
+            "type": 105,
+            "param": ["string"],
+            "doc": "return decoded base 36 string, the alphabet .Q.nA"
+        },
+        "k": {
+            "type": -9,
+            "doc": "kx q version"
+        },
+        "K": {
+            "type": -14,
+            "doc": "kx q version date"
+        },
+        "l": {
+            "type": 104,
+            "param": ["directory_symbol"],
+            "doc": "loads directory recursively as in load but in default namespace"
+        },
+        "ld": {
+            "type": 104,
+            "param": ["file_strings"],
+            "doc": "Exposes logic used by load, returns file strings grouped into blocks"
+        },
+        "li": {
+            "type": 100,
+            "param": ["partitions"],
+            "doc": "load partitions\nin the current hdp, any partitions which are in partitions and on disk"
+        },
+        "lo": {
+            "type": 100,
+            "param": [ "database_symbol", "cd_boolean", "execute_scripts_boolean" ],
+            "doc": "Load a database without changing directory and or loading scripts in database"
+        },
+        "M": {
+            "type": -7,
+            "doc": "chunk size for .Q.dsftg"
+        },
+        "MAP": {
+            "type": 100,
+            "param": [],
+            "doc": "Keeps partition mapped to avoid overhead of repeated file system calls"
+        },
+        "n": {
+            "type": 10,
+            "doc": "numerics"
+        },
+        "nA": {
+            "type": 10,
+            "doc": "upper-case alphabet and numerics"
+        },
+        "opt": {
+            "type": 100,
+            "param": [".z.x"],
+            "doc": "returns command-line as a dictionary, using the output of .z.x, defaults can be added using .Q.def"
+        },
+        "P": {
+            "type": 11,
+            "doc": "In segmented DBs, returns a list of the segments"
+        },
+        "par": {
+            "type": 100,
+            "param": [ "directory_symbol", "partition_date", "table" ],
+            "doc": "returns expected directory path of table of that date"
+        },
+        "PD": {
+            "type": 11,
+            "doc": "In partioned DBs, returns partition locations"
+        },
+        "pd": {
+            "type": 11,
+            "doc": "In partioned DBs, returns partition locations as modified by .Q.view"
+        },
+        "pf": {
+            "type": -11,
+            "doc": "In partitioned DBs, returns the partition field, possible values are `date`month`year`int"
+        },
+        "pn": {
+            "type": 99,
+            "doc": "In partitioned DBs, returns a dictionary of cached partition counts"
+        },
+        "prf0": {
+            "type": 105,
+            "param": ["pid"],
+            "doc": "code profiler\returns a table representing a snapshot of the call stack at the tiem of the call in another kdb+ process"
+        },
+        "pt": {
+            "type": 0,
+            "doc": "returns a list of partitioned tables"
+        },
+        "pv": {
+            "type": 0,
+            "doc": "modified partition values"
+        },
+        "PV": {
+            "type": 0,
+            "doc": "partition values"
+        },
+        "qp": {
+            "type": 100,
+            "param": ["object"],
+            "doc": "returns if object is partitioned table, if splayed returns 0b, else 0"
+        },
+        "qt": {
+            "type": 100,
+            "param": ["object"],
+            "doc": "returns if object is a table, else 0b"
+        },
+        "s": {
+            "type": 100,
+            "param": ["object"],
+            "doc": "returns object as formatted plain text, as used by console"
+        },
+        "s1": {
+            "type": 100,
+            "param": ["object"],
+            "doc": "returns string representation of object"
+        },
+        "sbt": {
+            "type": 100,
+            "param": ["backtrace_obj"],
+            "doc": "returns backtrace as a string formatted for display"
+        },
+        "sha1": {
+            "type": 104,
+            "param": ["string"],
+            "doc": "returns string as a bytestream its SHA-1 hash"
+        },
+        "t": {
+            "type": 10,
+            "doc": "type letters\nlist of chars indexed by datatype numbers"
+        },
+        "trp": {
+            "type": 100,
+            "param": [ "unary_function", "arg1", "binary_function" ],
+            "doc": "extend trap at\nreturns unary function with arg1, if error returns binary function called with error string and backtrace object"
+        },
+        "trpd": {
+            "type": 100,
+            "param": [ "function", "args", "binary_function" ],
+            "doc": "extend trap\nreturns function with args, if error returns binary function called with error string and backtrace object"
+        },
+        "ts": {
+            "type": 100,
+            "param": [ "arg1", "arg2" ],
+            "doc": "time and space\nequivalent to \\ts .[arg1;arg2], returning the time in miliseconds and space in bytes used for applying arg1 on arg2"
+        },
+        "ty": {
+            "type": 100,
+            "param": ["list"],
+            "doc": "type\nreturns type of list as a character code, lower case for lists, and upper case for uniform lists, else blank"
+        },
+        "u": {
+            "type": -1,
+            "doc": "date based\nin segmented DBs, return 1b if each partition is uniquely found in one segment\nin partitioned DBs, return 1"
+        },
+        "V": {
+            "type": 100,
+            "param": ["table"],
+            "doc": "table to dict\nreturns a dictionary of its column name to column values"
+        },
+        "v": {
+            "type": 100,
+            "param": ["symbol"],
+            "doc": "value\nif filepath, returns splayed table stored at symbol\nif any other symbol, returns global named symbol\nanything else, returns input"
+        },
+        "view": {
+            "type": 100,
+            "param": ["filter"],
+            "doc": "subview\nfilters any future queries to partitioned dbs with the input filter values"
+        },
+        "vp": {
+            "type": 99,
+            "doc": "missing partitions\nin partitioned DBs, returns a dictionary of table schemas for tables with missing partitions"
+        },
+        "w": {
+            "type": 100,
+            "param": [],
+            "doc": "memory stats\nreturns the memory stats from \\w into a more readable dictionary"
+        },
+        "x": {
+            "type": 0,
+            "doc": "non-command parameters\nset by .Q.opt, a list a non-command parameters from the command line, where command parameters are prefixed by -"
         }
     }
 }
