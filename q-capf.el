@@ -122,8 +122,8 @@
    (t (gethash type q-capf-type-hashmap))))
 
 (defun q-capf-refresh-cache (&optional only_global session)
-  "Scrapes variables and functions in global namespace from active session.
-Then refresh the cache of the completion at point function.
+  "Scrapes variables and functions in global namespace from `q-active-buffer'.
+Populates `q-capf-session-vars' cache for `q-capf-completion-at-point'.
 
 If ONLY_GLOBAL is not nil, scrape all other namespaces except those
 in q-capf-excluded-namespaces.
