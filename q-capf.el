@@ -3,7 +3,7 @@
 ;; Copyright (C) 2025 Justin Yu <jusytinyu@gmail.com>
 
 ;; Author: Justin Yu
-;; Keywords: completion at point function
+;; Keywords: tools, languages, wp
 ;; homepage: https://github.com/Gchouchou/q-capf
 ;; Created 1 Jan 2025
 ;; Version: 0.1
