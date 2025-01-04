@@ -121,11 +121,11 @@
    ((<= 20 type 76) "enums")
    (t (gethash type q-capf-type-hashmap))))
 
-(defun q-capf-refresh-cache (&optional only_global session)
+(defun q-capf-refresh-cache (&optional all_names session)
   "Scrapes variables and functions in global namespace from `q-active-buffer'.
 Populates `q-capf-session-vars' cache for `q-capf-completion-at-point'.
 
-If ONLY_GLOBAL is not nil, scrape all other namespaces except those
+If ALL_NAMES is not nil, scrape all other namespaces except those
 in q-capf-excluded-namespaces.
 If SESSION is not nil, scrape from SESSION instead, buffer or buffer string
 or handle name."
@@ -133,7 +133,7 @@ or handle name."
   ;; default to q-active-buffer
   (let* ((session (or session q-active-buffer))
          (param (format "[%s;%s]"
-                          (if only_global 1 0)
+                          (if all_names 1 0)
                           (pcase (length q-capf-excluded-namespaces)
                             (0 "()")
                             (1 (format "enlist `%s" (car q-capf-excluded-namespaces)))
@@ -152,9 +152,10 @@ or handle name."
            (string-match "\*q-.*\*"
                          (with-current-buffer (get-buffer session)
                            (buffer-name))))
-      (unless only_global
+      (unless all_names
         ;; full reset cache
-        (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal)))
+        (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal))
+        (message "Refreshing cache for all namespaces"))
       (setq q-capf--temp-output "")
       (with-current-buffer (get-buffer session)
         (add-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter 0 t)
@@ -184,14 +185,15 @@ or handle name."
                          (call-process q-program nil (current-buffer) nil file "-q")
                          (goto-char (point-min))
                          (json-parse-buffer))))
-          (message "using handle: %s" handle)
           (when (hash-table-p table)
-            (unless only_global
+            (unless all_names
               ;; full reset cache
-              (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal)))
+              (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal))
+              (message "Refreshing cache for all namespaces"))
             (mapc (lambda (name)
                     (puthash name (gethash name table) q-capf-session-vars))
-                  (hash-table-keys table)))
+                  (hash-table-keys table))
+            (message "Successful refresh of cache"))
           (delete-file file))))))
 
 (defun q-capf-json-output-filter (output)
@@ -215,8 +217,10 @@ It stores the temporary string in `q-capf--temp-output' and then puts
                   (mapc (lambda (name)
                           (puthash name (gethash name table) q-capf-session-vars))
                         (hash-table-keys table))
+                  (message "Sucessful refresh of cache")
                   (substring output nline-index))
-              (concat q-capf--temp-output (substring output nline-index)))
+              (prog1 (concat q-capf--temp-output (substring output nline-index))
+                (message "Unsuccessful refresh of cache, output was %s" q-capf--temp-output)))
           (or (remove-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter t)
               (remove-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter))
           (setq q-capf--temp-output ""))
