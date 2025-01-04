@@ -27,7 +27,7 @@ A sample configuration with `q-mode` and [`corfu`](https://github.com/minad/corf
   :defer t
   ;; add hook to completion at point function
   :hook (q-mode . (lambda ()
-                    (setq-local completion-at-point-functions #'cape-q-completion-at-point)))
+                    (setq-local completion-at-point-functions #'q-capf-completion-at-point)))
   :config
   ;; load the package after q-mode is loaded
   (require 'cape-q))
