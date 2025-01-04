@@ -1,3 +1,43 @@
+;;; q-capf.el --- Completion at point function for q-mode
+
+;; Copyright (C) 2025 Justin Yu <jusytinyu@gmail.com>
+
+;; Author: Justin Yu
+;; Keywords: completion at point function
+;; homepage: https://github.com/Gchouchou/q-capf
+;; Created 1 Jan 2025
+;; Version: 0.1
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+
+;;; Provide a completion at point function for q-mode for builtin and user defined
+;;; variables and functions. To scrape variables and functions from a live session
+;;; and add it to the cache, use `q-capf-refresh-cache'.
+
+;;; The package also uses the cache to provide documentation using eldoc.
+
+;;; Requirements:
+;;; Package-Requires: ((emacs "27.1"))
+
 ;;; Code:
 
 (require 'json)
@@ -29,7 +69,7 @@
   "String containing the q lambda to scrape session variables.")
 
 (defvar q-capf--namespace ""
-  "Namespace string for capf.")
+  "Namespace string for `q-capf-completion-at-point'.")
 
 (defconst q-capf-type-hashmap
   (let* ((table (make-hash-table :test 'eql :size 50)))
@@ -185,7 +225,8 @@ It stores the temporary string in `q-capf--temp-output' and then puts
 (defun q-capf-completion-at-point ()
   "Completion at point function for q-mode.
 
-Auto completes variables and functions."
+Auto completes variables and functions with candidates from
+`q-capf-session-vars' and `q-capf-builtin-vars'."
   (interactive)
   (when (and (hash-table-p q-capf-session-vars)
              ;; do not trigger inside comments and strings
@@ -303,9 +344,10 @@ If it cannot match a valid variable it will give begin and end bounds at point."
       (cons begin end))))
 
 (defun q-capf-eldoc (callback &rest _ignored)
-  "Print q var documentation by calling CALLBACK."
-  ;; the callback is just message when interactive
-  (interactive (list #'message))
+  "Print q var documentation by calling CALLBACK.
+
+Searches for the var at point through the hashtables `q-capf-builtin-vars'
+and `q-capf-session-vars'."
   (when-let* ((bounds (and (hash-table-p q-capf-session-vars)
                            ;; do not trigger inside comments and strings
                            (not (nth 3 (syntax-ppss)))
@@ -315,10 +357,11 @@ If it cannot match a valid variable it will give begin and end bounds at point."
               (doc (if (string-match
                         "\\.\\([a-zA-Z][a-zA-Z0-9_]*\\(\\.[a-zA-Z0-9_]+\\)*\\)\\.\\([a-zA-Z0-9_]+\\)"
                         thing)
-                       (let* ((namespace (match-string 1 thing))
-                              (var (substring thing (+ 2 (length namespace)))))
-                         (gethash var (or (gethash namespace q-capf-session-vars)
-                                          (gethash namespace q-capf-builtin-vars))))
+                       (when-let* ((namespace (match-string 1 thing))
+                                   (var (substring thing (+ 2 (length namespace))))
+                                   (docs (or (gethash namespace q-capf-session-vars)
+                                             (gethash namespace q-capf-builtin-vars))))
+                         (gethash var docs))
                      (or (gethash thing (gethash "" q-capf-builtin-vars))
                          (gethash thing (gethash "q" q-capf-builtin-vars))
                          (when (gethash "" q-capf-session-vars)
