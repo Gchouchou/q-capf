@@ -2,37 +2,36 @@
 
 (require 'json)
 (require 'q-mode)
-(require 'cape)
 
-(defcustom cape-q-excluded-namespaces ()
+(defcustom q-capf-excluded-namespaces ()
   "List of namespaces to exclude."
   :type 'list
-  :group 'cape-q)
+  :group 'q-capf)
 
-(defvar cape-q-session-vars (make-hash-table :size 5 :test 'equal)
+(defvar q-capf-session-vars (make-hash-table :size 5 :test 'equal)
   "Hashmap of namespaces:variable/function:documentation.")
 
-(defconst cape-q-builtin-vars (with-temp-buffer
+(defconst q-capf-builtin-vars (with-temp-buffer
                                 (insert-file-contents
                                  (concat (file-name-directory load-file-name) "/" "builtins.json"))
                                 (goto-char (point-min))
                                 (json-parse-buffer))
   "Hash table with builtin functions, variables and namespaces.")
 
-(defvar cape-q--temp-output ""
-  "String variable to hold q process output. Used in `cape-q-json-output-filter'.")
+(defvar q-capf--temp-output ""
+  "String variable to hold q process output. Used in `q-capf-json-output-filter'.")
 
-(defvar cape-q-function
+(defvar q-capf-function
   (q-strip
    (with-temp-buffer
      (insert-file-contents (concat (file-name-directory load-file-name) "/" "query_env.q"))
      (buffer-string)))
   "String containing the q lambda to scrape session variables.")
 
-(defvar cape-q--namespace ""
+(defvar q-capf--namespace ""
   "Namespace string for capf.")
 
-(defconst cape-q-type-hashmap
+(defconst q-capf-type-hashmap
   (let* ((table (make-hash-table :test 'eql :size 50)))
     (puthash 0 "list" table)
     (puthash -1 "boolean" table)
@@ -73,21 +72,21 @@
     table)
   "Hashmap that maps q-type integers to strings.")
 
-(defun cape-q-describe-type (type)
+(defun q-capf-describe-type (type)
   "Return descriptive string for q integer or string TYPE."
   (cond
    ((stringp type) type)
-   ((<= 1 type 19) (concat "list of " (gethash (- type) cape-q-type-hashmap)))
-   ((<= 78 type 96) (concat "mapped list of lists of type " (gethash (- type 77) cape-q-type-hashmap)))
+   ((<= 1 type 19) (concat "list of " (gethash (- type) q-capf-type-hashmap)))
+   ((<= 78 type 96) (concat "mapped list of lists of type " (gethash (- type 77) q-capf-type-hashmap)))
    ((<= 20 type 76) "enums")
-   (t (gethash type cape-q-type-hashmap))))
+   (t (gethash type q-capf-type-hashmap))))
 
-(defun cape-q-refresh-cache (&optional only_global session)
+(defun q-capf-refresh-cache (&optional only_global session)
   "Scrapes variables and functions in global namespace from active session.
 Then refresh the cache of the completion at point function.
 
 If ONLY_GLOBAL is not nil, scrape all other namespaces except those
-in cape-q-excluded-namespaces.
+in q-capf-excluded-namespaces.
 If SESSION is not nil, scrape from SESSION instead, buffer or buffer string
 or handle name."
   (interactive "P")
@@ -95,15 +94,15 @@ or handle name."
   (let* ((session (or session q-active-buffer))
          (param (format "[%s;%s]"
                           (if only_global 1 0)
-                          (pcase (length cape-q-excluded-namespaces)
+                          (pcase (length q-capf-excluded-namespaces)
                             (0 "()")
-                            (1 (format "enlist `%s" (car cape-q-excluded-namespaces)))
+                            (1 (format "enlist `%s" (car q-capf-excluded-namespaces)))
                             (_ (format "(%s)"
                                        (mapconcat (lambda (namespace)
                                                     (format "`%s" namespace))
-                                                  cape-q-excluded-namespaces
+                                                  q-capf-excluded-namespaces
                                                   ";"))))))
-         (full-body (concat cape-q-function param ", \"\\n\"")))
+         (full-body (concat q-capf-function param ", \"\\n\"")))
     (cond
      ((not (or (bufferp session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
      ((and (get-buffer session) (not (comint-check-proc (get-buffer session)))
@@ -115,10 +114,10 @@ or handle name."
                            (buffer-name))))
       (unless only_global
         ;; full reset cache
-        (setq cape-q-session-vars (make-hash-table :size 5 :test 'equal)))
-      (setq cape-q--temp-output "")
+        (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal)))
+      (setq q-capf--temp-output "")
       (with-current-buffer (get-buffer session)
-        (add-hook 'comint-preoutput-filter-functions #'cape-q-json-output-filter 0 t)
+        (add-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter 0 t)
         (save-excursion
           (goto-char (point-max))
           (insert "1 " full-body ";")
@@ -149,50 +148,50 @@ or handle name."
           (when (hash-table-p table)
             (unless only_global
               ;; full reset cache
-              (setq cape-q-session-vars (make-hash-table :size 5 :test 'equal)))
+              (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal)))
             (mapc (lambda (name)
-                    (puthash name (gethash name table) cape-q-session-vars))
+                    (puthash name (gethash name table) q-capf-session-vars))
                   (hash-table-keys table)))
           (delete-file file))))))
 
-(defun cape-q-json-output-filter (output)
+(defun q-capf-json-output-filter (output)
   "A oneshot filter that process OUTPUT from q or qcon process.
 It should be added to `comint-preoutput-filter-functions' and will remove
 itself after processing a new line input.
 
-It stores the temporary string in `cape-q--temp-output' and then puts
- the hashmap in `cape-q-session-vars'."
+It stores the temporary string in `q-capf--temp-output' and then puts
+ the hashmap in `q-capf-session-vars'."
   (let* ((nline-index (string-match "\n" output)))
-    (setq cape-q--temp-output (concat cape-q--temp-output (substring output 0 nline-index)))
+    (setq q-capf--temp-output (concat q-capf--temp-output (substring output 0 nline-index)))
     (if-let* ((nline-index)
               (table (condition-case nil
-                          (json-parse-string (replace-regexp-in-string comint-prompt-regexp "" cape-q--temp-output))
+                          (json-parse-string (replace-regexp-in-string comint-prompt-regexp "" q-capf--temp-output))
                         ;; we should get a hashtable, instead give t so we pass if-let
                         (t t))))
         (prog1
             (if (hash-table-p table)
                 (progn
-                  ;; push every value to key at cape-q-session-vars
+                  ;; push every value to key at q-capf-session-vars
                   (mapc (lambda (name)
-                          (puthash name (gethash name table) cape-q-session-vars))
+                          (puthash name (gethash name table) q-capf-session-vars))
                         (hash-table-keys table))
                   (substring output nline-index))
-              (concat cape-q--temp-output (substring output nline-index)))
-          (or (remove-hook 'comint-preoutput-filter-functions #'cape-q-json-output-filter t)
-              (remove-hook 'comint-preoutput-filter-functions #'cape-q-json-output-filter))
-          (setq cape-q--temp-output ""))
+              (concat q-capf--temp-output (substring output nline-index)))
+          (or (remove-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter t)
+              (remove-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter))
+          (setq q-capf--temp-output ""))
       "")))
 
-(defun cape-q-completion-at-point ()
+(defun q-capf-completion-at-point ()
   "Completion at point function for q-mode.
 
 Auto completes variables and functions."
   (interactive)
-  (when (and (hash-table-p cape-q-session-vars)
+  (when (and (hash-table-p q-capf-session-vars)
              ;; do not trigger inside comments and strings
              (not (nth 3 (syntax-ppss)))
              (not (nth 4 (syntax-ppss))))
-    (let* ((bounds (cape-q--bounds))
+    (let* ((bounds (q-capf--bounds))
            (begin (car bounds))
            (end (cdr bounds))
            ;; split into namespace and variable
@@ -203,47 +202,47 @@ Auto completes variables and functions."
                         (match-string 1 var)))
            (begin (if namespace (+ begin 2 (length namespace)) begin))
            (scandidates (append (if namespace
-                                    (hash-table-keys (or (gethash namespace cape-q-session-vars)
-                                                         (gethash namespace cape-q-builtin-vars)))
+                                    (hash-table-keys (or (gethash namespace q-capf-session-vars)
+                                                         (gethash namespace q-capf-builtin-vars)))
                                   ;; default namespace
-                                  (append (when (gethash "" cape-q-session-vars)
-                                            (hash-table-keys (gethash "" cape-q-session-vars)))
-                                          (hash-table-keys (gethash "" cape-q-builtin-vars))
-                                          (hash-table-keys (gethash "q" cape-q-builtin-vars))))
+                                  (append (when (gethash "" q-capf-session-vars)
+                                            (hash-table-keys (gethash "" q-capf-session-vars)))
+                                          (hash-table-keys (gethash "" q-capf-builtin-vars))
+                                          (hash-table-keys (gethash "q" q-capf-builtin-vars))))
                                 ;; add namespaces to global namespace
                                 (unless namespace
                                   (mapcar (lambda (name)
                                             (format ".%s." name))
                                           ;; remove empty string namespace
-                                          (delete "" (append (hash-table-keys cape-q-session-vars)
-                                                             (hash-table-keys cape-q-builtin-vars))))))))
-      (setq cape-q--namespace namespace)
+                                          (delete "" (append (hash-table-keys q-capf-session-vars)
+                                                             (hash-table-keys q-capf-builtin-vars))))))))
+      (setq q-capf--namespace namespace)
       (list begin
             end
             scandidates
             :annotation-function
             (lambda (cand)
               (format " %s"
-                      (if-let* ((doc (if cape-q--namespace
-                                         (gethash cand (or (gethash cape-q--namespace cape-q-session-vars)
-                                                           (gethash cape-q--namespace cape-q-builtin-vars)))
-                                       (or (gethash cand (gethash "" cape-q-builtin-vars))
-                                           (gethash cand (gethash "q" cape-q-builtin-vars))
-                                           (when (gethash "" cape-q-session-vars)
-                                             (gethash cand (gethash "" cape-q-session-vars))))))
+                      (if-let* ((doc (if q-capf--namespace
+                                         (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
+                                                           (gethash q-capf--namespace q-capf-builtin-vars)))
+                                       (or (gethash cand (gethash "" q-capf-builtin-vars))
+                                           (gethash cand (gethash "q" q-capf-builtin-vars))
+                                           (when (gethash "" q-capf-session-vars)
+                                             (gethash cand (gethash "" q-capf-session-vars))))))
                                 (type (gethash "type" doc)))
-                          (cape-q-describe-type type)
+                          (q-capf-describe-type type)
                         (if (string-match-p "^\\..*\\.$" cand)
                             "namespace"
                           "any"))))
             :company-doc-buffer
             (lambda (cand)
-              (when-let* ((doc (if cape-q--namespace
-                                   (gethash cand (or (gethash cape-q--namespace cape-q-session-vars)
-                                                     (gethash cape-q--namespace cape-q-builtin-vars)))
-                                 (or (gethash cand (gethash "" cape-q-builtin-vars))
-                                     (gethash cand (gethash "q" cape-q-builtin-vars))
-                                     (gethash cand (gethash "" cape-q-session-vars)))))
+              (when-let* ((doc (if q-capf--namespace
+                                   (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
+                                                     (gethash q-capf--namespace q-capf-builtin-vars)))
+                                 (or (gethash cand (gethash "" q-capf-builtin-vars))
+                                     (gethash cand (gethash "q" q-capf-builtin-vars))
+                                     (gethash cand (gethash "" q-capf-session-vars)))))
                           (docs (hash-table-keys doc))
                           (body (mapconcat
                                  #'identity
@@ -251,7 +250,7 @@ Auto completes variables and functions."
                                   nil
                                   (list
                                    (when (member "type" docs)
-                                     (format "%s is a %s." cand (cape-q-describe-type (gethash "type" doc))))
+                                     (format "%s is a %s." cand (q-capf-describe-type (gethash "type" doc))))
                                    (when (member "doc" docs)
                                      (format "%s" (gethash "doc" doc)))
                                    (when (member "cols" docs)
@@ -282,7 +281,7 @@ Auto completes variables and functions."
                     (visual-line-mode))
                   (current-buffer))))))))
 
-(defun cape-q--bounds ()
+(defun q-capf--bounds ()
   "Return the bounds of a variable or function in q.
 If it cannot match a valid variable it will give begin and end bounds at point."
   (save-excursion
@@ -303,30 +302,30 @@ If it cannot match a valid variable it will give begin and end bounds at point."
            (end (or end initial)))
       (cons begin end))))
 
-(defun cape-q-eldoc (callback &rest _ignored)
+(defun q-capf-eldoc (callback &rest _ignored)
   "Print q var documentation by calling CALLBACK."
   ;; the callback is just message when interactive
   (interactive (list #'message))
-  (when-let* ((bounds (and (hash-table-p cape-q-session-vars)
+  (when-let* ((bounds (and (hash-table-p q-capf-session-vars)
                            ;; do not trigger inside comments and strings
                            (not (nth 3 (syntax-ppss)))
                            (not (nth 4 (syntax-ppss)))
-                           (cape-q--bounds)))
+                           (q-capf--bounds)))
               (thing (buffer-substring-no-properties (car bounds) (cdr bounds)))
               (doc (if (string-match
                         "\\.\\([a-zA-Z][a-zA-Z0-9_]*\\(\\.[a-zA-Z0-9_]+\\)*\\)\\.\\([a-zA-Z0-9_]+\\)"
                         thing)
                        (let* ((namespace (match-string 1 thing))
                               (var (substring thing (+ 2 (length namespace)))))
-                         (gethash var (or (gethash namespace cape-q-session-vars)
-                                          (gethash namespace cape-q-builtin-vars))))
-                     (or (gethash thing (gethash "" cape-q-builtin-vars))
-                         (gethash thing (gethash "q" cape-q-builtin-vars))
-                         (when (gethash "" cape-q-session-vars)
-                           (gethash thing (gethash "" cape-q-session-vars))))))
+                         (gethash var (or (gethash namespace q-capf-session-vars)
+                                          (gethash namespace q-capf-builtin-vars))))
+                     (or (gethash thing (gethash "" q-capf-builtin-vars))
+                         (gethash thing (gethash "q" q-capf-builtin-vars))
+                         (when (gethash "" q-capf-session-vars)
+                           (gethash thing (gethash "" q-capf-session-vars))))))
               (entries (hash-table-keys doc))
               (type-string (if-let* ((type (gethash "type" doc)))
-                               (cape-q-describe-type type)
+                               (q-capf-describe-type type)
                              "any")))
     (funcall
      callback
@@ -357,7 +356,7 @@ If it cannot match a valid variable it will give begin and end bounds at point."
                       type-string)))
      :thing thing)))
 
-(add-hook 'q-mode-hook (lambda () (add-hook 'eldoc-documentation-functions #'cape-q-eldoc nil t)))
+(add-hook 'q-mode-hook (lambda () (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t)))
 
-(provide 'cape-q)
-;;; cape-q.el ends here
+(provide 'q-capf)
+;;; q-capf.el ends here
