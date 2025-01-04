@@ -1,7 +1,7 @@
 # Completion at Point Function for Q-mode
 
 A setup for getting documentation and auto completion for
-`q-mode`.
+[`q-mode`](https://github.com/psaris/q-mode).
 This is *not an LSP* and only provides for auto completion and `eldoc`.
 
 The goal is to make use of builtin q features to
@@ -16,7 +16,7 @@ Features:
 
 # Installation and Config Setup
 
-A sample configuration with `q-mode` and [`corfu`](https://github.com/minad/corfu) frontend:
+A sample configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`corfu`](https://github.com/minad/corfu) frontend:
 
 ``` emacs-lisp
 (use-package corfu
