@@ -213,7 +213,7 @@ Auto completes variables and functions."
                                 ;; add namespaces to global namespace
                                 (unless namespace
                                   (mapcar (lambda (name)
-                                            (concat "." name))
+                                            (format ".%s." name))
                                           ;; remove empty string namespace
                                           (delete "" (append (hash-table-keys cape-q-session-vars)
                                                              (hash-table-keys cape-q-builtin-vars))))))))
@@ -233,7 +233,7 @@ Auto completes variables and functions."
                                              (gethash cand (gethash "" cape-q-session-vars))))))
                                 (type (gethash "type" doc)))
                           (cape-q-describe-type type)
-                        (if (string-match-p "^\\..*$" cand)
+                        (if (string-match-p "^\\..*\\.$" cand)
                             "namespace"
                           "any"))))
             :company-doc-buffer
@@ -346,9 +346,13 @@ If it cannot match a valid variable it will give begin and end bounds at point."
                     type-string
                     (mapconcat #'identity (gethash "keys" doc) "; ")))
            ((member "doc" entries)
-            (format "%s: :%s"
+            (format "%s: doc:%s"
                     type-string
                     (gethash "doc" doc)))
+           ((member "body" entries)
+            (format "%s: body:%s"
+                    type-string
+                    (gethash "body" doc)))
            (t (format "%s"
                       type-string)))
      :thing thing)))
