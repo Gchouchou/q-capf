@@ -33,7 +33,7 @@ A sample configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`c
   (require 'cape-q))
 ```
 
-To load user global variables, run the following function i.e. `M-x cape-q-refresh-cache` with an active q-buffer.
-To load user variables of all namespaces, run the function with prefix i.e. `C-u M-x cape-q-refresh-cache` with an active q-buffer.
+To load user global variables, run the following function i.e. `M-x q-capf-refresh-cache` with an active q-buffer.
+To load user variables of all namespaces, run the function with prefix i.e. `C-u M-x q-capf-refresh-cache` with an active q-buffer.
 
-I recommend binding `cape-q-refresh-cache` to a key and customizing the input parameters.
+I recommend binding `q-capf-refresh-cache` to a key and customizing the input parameters.
