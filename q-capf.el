@@ -209,7 +209,7 @@ It stores the temporary string in `q-capf--temp-output' and then puts
               (table (condition-case nil
                           (json-parse-string (replace-regexp-in-string comint-prompt-regexp "" q-capf--temp-output))
                         ;; we should get a hashtable, instead give t so we pass if-let
-                        (t t))))
+                        (t (message "Not a json, input string was %s" q-capf--temp-output) t))))
         (prog1
             (if (hash-table-p table)
                 (progn
@@ -219,8 +219,7 @@ It stores the temporary string in `q-capf--temp-output' and then puts
                         (hash-table-keys table))
                   (message "Sucessful refresh of cache")
                   (substring output nline-index))
-              (prog1 (concat q-capf--temp-output (substring output nline-index))
-                (message "Unsuccessful refresh of cache, output was %s" q-capf--temp-output)))
+              (concat q-capf--temp-output (substring output nline-index)))
           (or (remove-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter t)
               (remove-hook 'comint-preoutput-filter-functions #'q-capf-json-output-filter))
           (setq q-capf--temp-output ""))
