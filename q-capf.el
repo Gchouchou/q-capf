@@ -246,16 +246,15 @@ Auto completes variables and functions with candidates from
                              var)
                         (match-string 1 var)))
            (begin (if namespace (+ begin 2 (length namespace)) begin))
-           (scandidates (append (if namespace
-                                    (hash-table-keys (or (gethash namespace q-capf-session-vars)
-                                                         (gethash namespace q-capf-builtin-vars)))
-                                  ;; default namespace
-                                  (append (when (gethash "" q-capf-session-vars)
-                                            (hash-table-keys (gethash "" q-capf-session-vars)))
-                                          (hash-table-keys (gethash "" q-capf-builtin-vars))
-                                          (hash-table-keys (gethash "q" q-capf-builtin-vars))))
-                                ;; add namespaces to global namespace
-                                (unless namespace
+           (scandidates (if namespace
+                            (hash-table-keys (or (gethash namespace q-capf-session-vars)
+                                                 (gethash namespace q-capf-builtin-vars)))
+                          ;; default namespace
+                          (append (when-let* ((session-vars (gethash "" q-capf-session-vars)))
+                                    (hash-table-keys session-vars))
+                                  (hash-table-keys (gethash "" q-capf-builtin-vars))
+                                  (hash-table-keys (gethash "q" q-capf-builtin-vars))
+                                  ;; add namespaces to global namespace
                                   (mapcar (lambda (name)
                                             (format ".%s." name))
                                           ;; remove empty string namespace
@@ -273,8 +272,8 @@ Auto completes variables and functions with candidates from
                                                            (gethash q-capf--namespace q-capf-builtin-vars)))
                                        (or (gethash cand (gethash "" q-capf-builtin-vars))
                                            (gethash cand (gethash "q" q-capf-builtin-vars))
-                                           (when (gethash "" q-capf-session-vars)
-                                             (gethash cand (gethash "" q-capf-session-vars))))))
+                                           (when-let* ((session-vars (gethash "" q-capf-session-vars)))
+                                             (gethash cand session-vars)))))
                                 (type (gethash "type" doc)))
                           (q-capf-describe-type type)
                         (if (string-match-p "^\\..*\\.$" cand)
