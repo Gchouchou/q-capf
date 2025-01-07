@@ -182,9 +182,11 @@ or handle name."
                                              handle
                                              escaped-body)))
                (table (with-temp-buffer
-                         (call-process q-program nil (current-buffer) nil file "-q")
-                         (goto-char (point-min))
-                         (json-parse-buffer))))
+                        (condition-case err
+                            (call-process q-program nil (current-buffer) nil file "-q")
+                          (goto-char (point-min))
+                          (json-parse-buffer)
+                          (t (message (error-message-string err)) nil)))))
           (when (hash-table-p table)
             (unless all_names
               ;; full reset cache
