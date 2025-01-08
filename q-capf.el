@@ -144,7 +144,7 @@ or handle name."
                                                   ";"))))))
          (full-body (concat q-capf-function param ", \"\\n\"")))
     (cond
-     ((not (and (bufferp session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
+     ((not (or (bufferp session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
      ((and (get-buffer session) (not (comint-check-proc (get-buffer session)))
            (error "Found buffer %s but comint did not find any processes" (get-buffer session))))
      ;; it matches a buffer and is a q session
