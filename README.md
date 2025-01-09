@@ -50,4 +50,6 @@ The documentation comes from https://code.kx.com/q/ref/ but is not consistent an
 To extend the number of builtin variables, see `builtins.json` for the format required.
 
 `query_env.q` contains the `q` lambda used to scrape from the live session. It returns a json string of a similar format
-to `builtins.json`.
+to `builtins.json`. Since namespaces are simply dictionaries, there is no difference between a dictionary and a namespace inside a dictionary.
+Beacuse of this issue, `query_env.q` does not scrape deeper than one layer inside the namespace. There is no distinction between a sub namespace and
+a dictionary.
