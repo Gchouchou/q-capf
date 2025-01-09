@@ -400,6 +400,26 @@
             "type": "control construct",
             "param": [ "test", "expression1", "expression2..." ],
             "doc": "unless test expression evaluates to 0, repeatedly evaluates expression1, expression2, etc... returns generic null"
+        },
+        "select": {
+            "type": "qSQL",
+            "doc": "Select all or part of a table, possibly with new columns\nqsql like syntax form select cols from table where conditions"
+        },
+        "update": {
+            "type": "qSQL",
+            "doc": "Add or amend rows or columns of a table or entries in a dictionary\nqsql like syntax form update cols from table where conditions"
+        },
+        "delete": {
+            "type": "qSQL",
+            "doc": "Delete rows or columns from a table, entries from a dictionary, or objects from a namespace"
+        },
+        "exec": {
+            "type": "qSQL",
+            "doc": "Return selected rows and columns from a table"
+        },
+        "from": {
+            "type": "qSQL",
+            "doc": "keyword in qSQL queries"
         }
     },
 
