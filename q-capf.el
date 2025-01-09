@@ -152,7 +152,7 @@ or handle name."
            (string-match "\*q-.*\*"
                          (with-current-buffer (get-buffer session)
                            (buffer-name))))
-      (unless all_names
+      (when all_names
         ;; full reset cache
         (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal))
         (message "Refreshing cache for all namespaces"))
@@ -188,7 +188,7 @@ or handle name."
                             (json-parse-buffer))
                         (t (message (error-message-string err)) nil))))
           (when (hash-table-p table)
-            (unless all_names
+            (when all_names
               ;; full reset cache
               (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal))
               (message "Refreshing cache for all namespaces"))
