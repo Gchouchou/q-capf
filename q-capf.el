@@ -133,15 +133,15 @@ or handle name."
   ;; default to q-active-buffer
   (let* ((session (or session q-active-buffer))
          (param (format "[%s;%s]"
-                          (if all_names 1 0)
-                          (pcase (length q-capf-excluded-namespaces)
-                            (0 "()")
-                            (1 (format "enlist `%s" (car q-capf-excluded-namespaces)))
-                            (_ (format "(%s)"
-                                       (mapconcat (lambda (namespace)
-                                                    (format "`%s" namespace))
-                                                  q-capf-excluded-namespaces
-                                                  ";"))))))
+                        (if all_names 1 0)
+                        (pcase (length q-capf-excluded-namespaces)
+                          (0 "()")
+                          (1 (format "enlist `%s" (car q-capf-excluded-namespaces)))
+                          (_ (format "(%s)"
+                                     (mapconcat (lambda (namespace)
+                                                  (format "`%s" namespace))
+                                                q-capf-excluded-namespaces
+                                                ";"))))))
          (full-body (concat q-capf-function param ", \"\\n\"")))
     (cond
      ((not (or (bufferp session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
@@ -182,11 +182,11 @@ or handle name."
                                              handle
                                              escaped-body)))
                (table (condition-case err
-                        (with-temp-buffer
+                          (with-temp-buffer
                             (call-process q-program nil (current-buffer) nil file "-q")
                             (goto-char (point-min))
                             (json-parse-buffer))
-                          (t (message (error-message-string err)) nil))))
+                        (t (message (error-message-string err)) nil))))
           (when (hash-table-p table)
             (unless all_names
               ;; full reset cache
@@ -317,7 +317,7 @@ Auto completes variables and functions with candidates from
                                              (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
                                    (when (member "body" docs)
                                      (format "Function Body:\n%s" (gethash "body" doc)))))
-                                 "\n\n")))
+                                 "\n")))
                 (with-current-buffer (get-buffer-create "*documentation*")
                   (erase-buffer)
                   (fundamental-mode)
