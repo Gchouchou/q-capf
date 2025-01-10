@@ -265,7 +265,7 @@ Auto completes variables and functions with candidates from
                                           (delete "" (append (hash-table-keys q-capf-session-vars)
                                                              (hash-table-keys q-capf-builtin-vars))))))))
       ;; make sure we give more than one candidate
-      (when (< 0 (length scandidates))
+      (unless (zerop (length scandidates))
         (setq q-capf--namespace namespace)
         (list begin
               end
