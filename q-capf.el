@@ -246,7 +246,6 @@ Auto completes variables and functions with candidates from
                              "\\.\\([a-zA-Z][a-zA-Z0-9_]*\\(\\.[a-zA-Z0-9_]+\\)*\\)\\.[a-zA-Z0-9_]*"
                              var)
                         (match-string 1 var)))
-           (begin (if namespace (+ begin 2 (length namespace)) begin))
            (scandidates (if-let* ((docs (and namespace
                                              (or (gethash namespace q-capf-session-vars)
                                                  (gethash namespace q-capf-builtin-vars)))))
