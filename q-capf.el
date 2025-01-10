@@ -209,9 +209,9 @@ It stores the temporary string in `q-capf--temp-output' and then puts
     (setq q-capf--temp-output (concat q-capf--temp-output (substring output 0 nline-index)))
     (if-let* ((nline-index)
               (table (condition-case nil
-                          (json-parse-string (replace-regexp-in-string comint-prompt-regexp "" q-capf--temp-output))
-                        ;; we should get a hashtable, instead give t so we pass if-let
-                        (t (message "Not a json, input string was %s" q-capf--temp-output) t))))
+                         (json-parse-string (replace-regexp-in-string comint-prompt-regexp "" q-capf--temp-output))
+                       ;; we should get a hashtable, instead give t so we pass if-let
+                       (t (message "Not a json, input string was %s" q-capf--temp-output) t))))
         (prog1
             (if (hash-table-p table)
                 (progn
@@ -247,10 +247,13 @@ Auto completes variables and functions with candidates from
                              var)
                         (match-string 1 var)))
            (begin (if namespace (+ begin 2 (length namespace)) begin))
-           (scandidates (if namespace
-                            (hash-table-keys (or (gethash namespace q-capf-session-vars)
-                                                 (gethash namespace q-capf-builtin-vars)))
+           (scandidates (if-let* ((docs (and namespace
+                                             (or (gethash namespace q-capf-session-vars)
+                                                 (gethash namespace q-capf-builtin-vars)))))
+                            (progn (setq begin (+ begin 2 (length namespace)))
+                                   (hash-table-keys docs))
                           ;; default namespace
+                          (setq namespace nil)
                           (append (when-let* ((session-vars (gethash "" q-capf-session-vars)))
                                     (hash-table-keys session-vars))
                                   (hash-table-keys (gethash "" q-capf-builtin-vars))
@@ -261,70 +264,73 @@ Auto completes variables and functions with candidates from
                                           ;; remove empty string namespace
                                           (delete "" (append (hash-table-keys q-capf-session-vars)
                                                              (hash-table-keys q-capf-builtin-vars))))))))
-      (setq q-capf--namespace namespace)
-      (list begin
-            end
-            scandidates
-            :annotation-function
-            (lambda (cand)
-              (format " %s"
-                      (if-let* ((doc (if q-capf--namespace
-                                         (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
-                                                           (gethash q-capf--namespace q-capf-builtin-vars)))
-                                       (or (gethash cand (gethash "" q-capf-builtin-vars))
-                                           (gethash cand (gethash "q" q-capf-builtin-vars))
-                                           (when-let* ((session-vars (gethash "" q-capf-session-vars)))
-                                             (gethash cand session-vars)))))
-                                (type (gethash "type" doc)))
-                          (q-capf-describe-type type)
-                        (if (string-match-p "^\\..*\\.$" cand)
-                            "namespace"
-                          "any"))))
-            :company-doc-buffer
-            (lambda (cand)
-              (when-let* ((doc (if q-capf--namespace
-                                   (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
-                                                     (gethash q-capf--namespace q-capf-builtin-vars)))
-                                 (or (gethash cand (gethash "" q-capf-builtin-vars))
-                                     (gethash cand (gethash "q" q-capf-builtin-vars))
-                                     (gethash cand (gethash "" q-capf-session-vars)))))
-                          (docs (hash-table-keys doc))
-                          (body (mapconcat
-                                 #'identity
-                                 (delete
-                                  nil
-                                  (list
-                                   (when (member "type" docs)
-                                     (format "%s is a %s." cand (q-capf-describe-type (gethash "type" doc))))
-                                   (when (member "doc" docs)
-                                     (format "%s" (gethash "doc" doc)))
-                                   (when (member "cols" docs)
-                                     ;; cols is converted to a vector
-                                     (format "Table Columns:\n%s"
-                                             (mapconcat #'identity (gethash "cols" doc) ", ")))
-                                   (when (member "keys" docs)
-                                     ;; keys is converted to a vector
-                                     (format "Dictionary Keys:\n%s"
-                                             (mapconcat #'identity (gethash "keys" doc) ", ")))
-                                   (when (member "param" docs)
-                                     ;; params is converted to a vector
-                                     (if (< 0 (length (gethash "param" doc)))
-                                         (format "Function Parameters Names:\n%s"
-                                                 (mapconcat #'identity (gethash "param" doc) ", "))
-                                       "Function takes in no parameters"))
-                                   (when (member "file" docs)
-                                     (concat (format "Function source file: %s" (gethash "file" doc))
-                                             (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
-                                   (when (member "body" docs)
-                                     (format "Function Body:\n%s" (gethash "body" doc)))))
-                                 "\n")))
-                (with-current-buffer (get-buffer-create "*documentation*")
-                  (erase-buffer)
-                  (fundamental-mode)
-                  (save-excursion
-                    (insert body)
-                    (visual-line-mode))
-                  (current-buffer))))))))
+      ;; make sure we give more than one candidate
+      (when (< 0 (length scandidates))
+        (setq q-capf--namespace namespace)
+        (list begin
+              end
+              scandidates
+              :exclusive 'no
+              :annotation-function
+              (lambda (cand)
+                (format " %s"
+                        (if-let* ((doc (if q-capf--namespace
+                                           (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
+                                                             (gethash q-capf--namespace q-capf-builtin-vars)))
+                                         (or (gethash cand (gethash "" q-capf-builtin-vars))
+                                             (gethash cand (gethash "q" q-capf-builtin-vars))
+                                             (when-let* ((session-vars (gethash "" q-capf-session-vars)))
+                                               (gethash cand session-vars)))))
+                                  (type (gethash "type" doc)))
+                            (q-capf-describe-type type)
+                          (if (string-match-p "^\\..*\\.$" cand)
+                              "namespace"
+                            "any"))))
+              :company-doc-buffer
+              (lambda (cand)
+                (when-let* ((doc (if q-capf--namespace
+                                     (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
+                                                       (gethash q-capf--namespace q-capf-builtin-vars)))
+                                   (or (gethash cand (gethash "" q-capf-builtin-vars))
+                                       (gethash cand (gethash "q" q-capf-builtin-vars))
+                                       (gethash cand (gethash "" q-capf-session-vars)))))
+                            (docs (hash-table-keys doc))
+                            (body (mapconcat
+                                   #'identity
+                                   (delete
+                                    nil
+                                    (list
+                                     (when (member "type" docs)
+                                       (format "%s is a %s." cand (q-capf-describe-type (gethash "type" doc))))
+                                     (when (member "doc" docs)
+                                       (format "%s" (gethash "doc" doc)))
+                                     (when (member "cols" docs)
+                                       ;; cols is converted to a vector
+                                       (format "Table Columns:\n%s"
+                                               (mapconcat #'identity (gethash "cols" doc) ", ")))
+                                     (when (member "keys" docs)
+                                       ;; keys is converted to a vector
+                                       (format "Dictionary Keys:\n%s"
+                                               (mapconcat #'identity (gethash "keys" doc) ", ")))
+                                     (when (member "param" docs)
+                                       ;; params is converted to a vector
+                                       (if (< 0 (length (gethash "param" doc)))
+                                           (format "Function Parameters Names:\n%s"
+                                                   (mapconcat #'identity (gethash "param" doc) ", "))
+                                         "Function takes in no parameters"))
+                                     (when (member "file" docs)
+                                       (concat (format "Function source file: %s" (gethash "file" doc))
+                                               (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
+                                     (when (member "body" docs)
+                                       (format "Function Body:\n%s" (gethash "body" doc)))))
+                                   "\n")))
+                  (with-current-buffer (get-buffer-create "*documentation*")
+                    (erase-buffer)
+                    (fundamental-mode)
+                    (save-excursion
+                      (insert body)
+                      (visual-line-mode))
+                    (current-buffer)))))))))
 
 (defun q-capf--bounds ()
   "Return the bounds of a variable or function in q.
