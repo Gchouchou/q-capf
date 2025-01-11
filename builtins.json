@@ -420,6 +420,10 @@
         "from": {
             "type": "qSQL",
             "doc": "keyword in qSQL queries"
+        },
+        "by": {
+            "type": "qSQL",
+            "doc": "keyword in qSQL select queries"
         }
     },
 
