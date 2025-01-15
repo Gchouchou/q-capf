@@ -364,22 +364,30 @@ and `q-capf-session-vars'."
                            (not (nth 4 (syntax-ppss)))
                            (q-capf--bounds)))
               (thing (buffer-substring-no-properties (car bounds) (cdr bounds)))
+              (face 'font-lock-variable-name-face)
               (doc (if (string-match
                         "\\.\\([a-zA-Z][a-zA-Z0-9_]*\\(\\.[a-zA-Z0-9_]+\\)*\\)\\.\\([a-zA-Z0-9_]+\\)"
                         thing)
                        (when-let* ((namespace (match-string 1 thing))
                                    (var (substring thing (+ 2 (length namespace))))
                                    (docs (or (gethash namespace q-capf-session-vars)
-                                             (gethash namespace q-capf-builtin-vars))))
+                                             (when-let* ((x (gethash namespace q-capf-builtin-vars)))
+                                               (pcase namespace
+                                                 ("z" (setq face 'font-lock-constant-face))
+                                                 ("q" (setq face 'font-lock-keyword-face))
+                                                 (_ (setq face 'font-lock-builtin-face)))
+                                               x))))
                          (gethash var docs))
-                     (or (gethash thing (gethash "" q-capf-builtin-vars))
-                         (gethash thing (gethash "q" q-capf-builtin-vars))
+                     (or (when-let* ((x (or (gethash thing (gethash "" q-capf-builtin-vars))
+                                            (gethash thing (gethash "q" q-capf-builtin-vars)))))
+                           (setq face 'font-lock-keyword-face) x)
                          (when (gethash "" q-capf-session-vars)
                            (gethash thing (gethash "" q-capf-session-vars))))))
               (entries (hash-table-keys doc))
               (type-string (if-let* ((type (gethash "type" doc)))
                                (q-capf-describe-type type)
                              "any")))
+    (put-text-property 0 (length type-string) 'face 'font-lock-type-face type-string)
     (funcall
      callback
      ;; first use function params
@@ -407,7 +415,8 @@ and `q-capf-session-vars'."
                     (gethash "body" doc)))
            (t (format "%s"
                       type-string)))
-     :thing thing)))
+     :thing thing
+     :face face)))
 
 (add-hook 'q-mode-hook (lambda () (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t)))
 
