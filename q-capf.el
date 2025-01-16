@@ -386,35 +386,36 @@ and `q-capf-session-vars'."
               (entries (hash-table-keys doc))
               (type-string (if-let* ((type (gethash "type" doc)))
                                (q-capf-describe-type type)
-                             "any")))
-    (put-text-property 0 (length type-string) 'face 'font-lock-type-face type-string)
+                             "any"))
+              ;; first use function params
+              (docstr (cond ((member "param" entries)
+                             (format "%s: param:(%s)"
+                                     type-string
+                                     (mapconcat #'identity (gethash "param" doc) "; ")))
+                            ;; then give table columns
+                            ((member "cols" entries)
+                             (format "%s: cols:(%s)"
+                                     type-string
+                                     (mapconcat #'identity (gethash "cols" doc) "; ")))
+                            ;; dictionary keys
+                            ((member "keys" entries)
+                             (format "%s: keys:(%s)"
+                                     type-string
+                                     (mapconcat #'identity (gethash "keys" doc) "; ")))
+                            ((member "doc" entries)
+                             (format "%s: doc:%s"
+                                     type-string
+                                     (gethash "doc" doc)))
+                            ((member "body" entries)
+                             (format "%s: body:%s"
+                                     type-string
+                                     (gethash "body" doc)))
+                            (t (format "%s"
+                                       type-string)))))
+    (put-text-property 0 (length type-string) 'face 'font-lock-type-face docstr)
     (funcall
      callback
-     ;; first use function params
-     (cond ((member "param" entries)
-            (format "%s: param:(%s)"
-                    type-string
-                    (mapconcat #'identity (gethash "param" doc) "; ")))
-           ;; then give table columns
-           ((member "cols" entries)
-            (format "%s: cols:(%s)"
-                    type-string
-                    (mapconcat #'identity (gethash "cols" doc) "; ")))
-           ;; dictionary keys
-           ((member "keys" entries)
-            (format "%s: keys:(%s)"
-                    type-string
-                    (mapconcat #'identity (gethash "keys" doc) "; ")))
-           ((member "doc" entries)
-            (format "%s: doc:%s"
-                    type-string
-                    (gethash "doc" doc)))
-           ((member "body" entries)
-            (format "%s: body:%s"
-                    type-string
-                    (gethash "body" doc)))
-           (t (format "%s"
-                      type-string)))
+     docstr
      :thing thing
      :face face)))
 
