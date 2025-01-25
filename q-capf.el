@@ -232,7 +232,6 @@ It stores the temporary string in `q-capf--temp-output' and then puts
 
 Auto completes variables and functions with candidates from
 `q-capf-session-vars' and `q-capf-builtin-vars'."
-  (interactive)
   (when (and (hash-table-p q-capf-session-vars)
              ;; do not trigger inside comments and strings
              (not (nth 3 (syntax-ppss)))
@@ -391,17 +390,23 @@ and `q-capf-session-vars'."
               (docstr (cond ((member "param" entries)
                              (format "%s: param:(%s)"
                                      type-string
-                                     (mapconcat #'identity (gethash "param" doc) "; ")))
+                                     (mapconcat #'identity (let ((param (gethash "param" doc)))
+                                                             (cl-subseq param 0 (min (length param) 20)))
+                                                "; ")))
                             ;; then give table columns
                             ((member "cols" entries)
                              (format "%s: cols:(%s)"
                                      type-string
-                                     (mapconcat #'identity (gethash "cols" doc) "; ")))
+                                     (mapconcat #'identity (let ((cols (gethash "cols" doc)))
+                                                             (cl-subseq cols 0 (min (length cols) 20)))
+                                                "; ")))
                             ;; dictionary keys
                             ((member "keys" entries)
                              (format "%s: keys:(%s)"
                                      type-string
-                                     (mapconcat #'identity (gethash "keys" doc) "; ")))
+                                     (mapconcat #'identity (let ((keys (gethash "keys" doc)))
+                                                             (cl-subseq keys 0 (min (length keys) 20)))
+                                                "; ")))
                             ((member "doc" entries)
                              (format "%s: doc:%s"
                                      type-string
