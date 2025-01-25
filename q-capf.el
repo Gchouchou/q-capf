@@ -227,6 +227,21 @@ It stores the temporary string in `q-capf--temp-output' and then puts
           (setq q-capf--temp-output ""))
       "")))
 
+(defun q-capf-get-doc (symbol &optional namespace)
+  "Get documentation for SYMBOL in NAMESPACE.
+If NAMESPACE is nil or empty string, assume default or global namespace.
+
+Searches documentation in `q-capf-session-vars' and `q-capf-builtin-vars'."
+  (interactive "sSymbol: \nsNamespace:")
+  (if (and (stringp namespace) (> (length namespace) 0))
+      (when-let ((namespace-hashtable (or (gethash namespace q-capf-session-vars)
+                                          (gethash namespace q-capf-builtin-vars))))
+        (gethash symbol namespace-hashtable))
+    (or (gethash symbol (gethash "" q-capf-builtin-vars))
+        (gethash symbol (gethash "q" q-capf-builtin-vars))
+        (when-let ((session-vars (gethash "" q-capf-session-vars)))
+          (gethash symbol session-vars)))))
+
 (defun q-capf-completion-at-point ()
   "Completion at point function for q-mode.
 
@@ -272,13 +287,7 @@ Auto completes variables and functions with candidates from
               :annotation-function
               (lambda (cand)
                 (format " %s"
-                        (if-let* ((doc (if q-capf--namespace
-                                           (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
-                                                             (gethash q-capf--namespace q-capf-builtin-vars)))
-                                         (or (gethash cand (gethash "" q-capf-builtin-vars))
-                                             (gethash cand (gethash "q" q-capf-builtin-vars))
-                                             (when-let* ((session-vars (gethash "" q-capf-session-vars)))
-                                               (gethash cand session-vars)))))
+                        (if-let* ((doc (q-capf-get-doc cand q-capf--namespace))
                                   (type (gethash "type" doc)))
                             (q-capf-describe-type type)
                           (if (string-match-p "^\\..*\\.$" cand)
@@ -286,12 +295,7 @@ Auto completes variables and functions with candidates from
                             "any"))))
               :company-doc-buffer
               (lambda (cand)
-                (when-let* ((doc (if q-capf--namespace
-                                     (gethash cand (or (gethash q-capf--namespace q-capf-session-vars)
-                                                       (gethash q-capf--namespace q-capf-builtin-vars)))
-                                   (or (gethash cand (gethash "" q-capf-builtin-vars))
-                                       (gethash cand (gethash "q" q-capf-builtin-vars))
-                                       (gethash cand (gethash "" q-capf-session-vars)))))
+                (when-let* ((doc (q-capf-get-doc cand q-capf--namespace))
                             (docs (hash-table-keys doc))
                             (body (mapconcat
                                    #'identity
