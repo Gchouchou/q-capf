@@ -365,7 +365,10 @@ and `q-capf-session-vars'."
                            ;; do not trigger inside comments and strings
                            (not (nth 3 (syntax-ppss)))
                            (not (nth 4 (syntax-ppss)))
-                           (q-capf--bounds)))
+                           (save-excursion
+                             ;; move backward when there is a [
+                             (when (eq (char-after) 91) (backward-char))
+                             (q-capf--bounds))))
               (thing (buffer-substring-no-properties (car bounds) (cdr bounds)))
               (face 'font-lock-variable-name-face)
               (doc (if (string-match
