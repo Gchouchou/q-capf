@@ -17,6 +17,23 @@
   max_body: 100; / maximum length
   truncate_string:{[max_body;s] $[max_body < count s; (max_body# s), "..."; s]}[max_body];
 
+  / get parameters for composition and projection
+  get_param:{[function]
+   t: type function;
+   v: value function;
+   :$[
+    / projection
+    (100 = type v[0]) & (t = 104);
+    / take unspecified parameters
+    enlist[`param]!enlist (value[v[0]][1]) where
+    ({if[101 = type x;:x=(::)];:0b} each (1_v)), (((count value[v[0]][1])-(count v)-1)#1b);
+    / composition
+    (100 = type last v) & (t = 105); enlist[`param]!enlist value[last v][1];
+    / other stuff are nyi
+    ()
+    ]
+   };
+
   / output documentation dictionary
   :$[
    / is a table, give cols
@@ -29,7 +46,7 @@
     if[0 < count (reverse v)[2]; result[`file]: (reverse v)[2]; if[-1 <> count (reverse v)[1]; result[`line]: (reverse v)[1]]];
     :result }[t;x;truncate_string];
    / projection, composition, iteration
-   t within (104;111); `type`body! t, enlist truncate_string .Q.s x;
+   t within (104;111); (`type`body! t, enlist truncate_string .Q.s x), get_param[x];
    / other only give type
    (enlist `type)!enlist t
    ]
