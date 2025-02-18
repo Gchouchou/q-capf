@@ -23,10 +23,10 @@
    v: value function;
    :$[
     / projection
-    (100 = type v[0]) & (t = 104);
+    (100 = type first v) & (t = 104);
     / take unspecified parameters
     enlist[`param]!enlist (value[v[0]][1]) where
-    ({if[101 = type x;:x=(::)];:0b} each (1_v)), (((count value[v[0]][1])-(count v)-1)#1b);
+    ({$[101 = type x; x = (::); 0b]} each (1_v)), (((count value[v[0]][1]) - (count v) - 1)#1b);
     / composition
     (100 = type last v) & (t = 105); enlist[`param]!enlist value[last v][1];
     / other stuff are nyi
