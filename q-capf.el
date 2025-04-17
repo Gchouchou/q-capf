@@ -1,10 +1,10 @@
-;;; q-capf.el --- Completion at point function for q-mode
+;;; q-capf.el --- Completion at point function for q-mode -*- lexical-binding: nil -*-
 
 ;; Copyright (C) 2025 Justin Yu <jusytinyu@gmail.com>
 
 ;; Author: Justin Yu
 ;; Keywords: tools, languages, wp
-;; homepage: https://github.com/Gchouchou/q-capf
+;; Homepage: https://github.com/Gchouchou/q-capf
 ;; Created 1 Jan 2025
 ;; Version: 0.1
 
@@ -36,7 +36,7 @@
 ;;; The package also uses the cache to provide documentation using eldoc.
 
 ;;; Requirements:
-;;; Package-Requires: ((emacs "27.1"))
+;;; Package-Requires: ((emacs "27.1") (q-mode))
 
 ;;; Code:
 
@@ -51,65 +51,80 @@
 (defvar q-capf-session-vars (make-hash-table :size 5 :test 'equal)
   "Hashmap of namespaces:variable/function:documentation.")
 
-(defconst q-capf-builtin-vars (with-temp-buffer
-                                (insert-file-contents
-                                 (concat (file-name-directory load-file-name) "/" "builtins.json"))
-                                (goto-char (point-min))
-                                (json-parse-buffer))
+(defconst q-capf-builtin-vars
+  (eval-when-compile
+    (let* ((dir (cond
+                 (load-file-name)
+                 ((boundp 'byte-compile-current-file) byte-compile-current-file)
+                 (buffer-file-name)))
+           (file (concat (file-name-directory dir)
+                         "builtins.json")))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (goto-char (point-min))
+        (json-parse-buffer))))
   "Hash table with builtin functions, variables and namespaces.")
 
 (defvar q-capf--temp-output ""
   "String variable to hold q process output. Used in `q-capf-json-output-filter'.")
 
 (defvar q-capf-function
-  (q-strip
-   (with-temp-buffer
-     (insert-file-contents (concat (file-name-directory load-file-name) "/" "query_env.q"))
-     (buffer-string)))
+  (eval-when-compile
+    (q-strip
+     (let* ((dir (cond
+                 (load-file-name)
+                 ((boundp 'byte-compile-current-file) byte-compile-current-file)
+                 (buffer-file-name)))
+            (file (concat (file-name-directory dir)
+                          "query_env.q")))
+       (with-temp-buffer
+         (insert-file-contents file)
+         (buffer-string)))))
   "String containing the q lambda to scrape session variables.")
 
 (defvar q-capf--namespace ""
   "Namespace string for `q-capf-completion-at-point'.")
 
 (defconst q-capf-type-hashmap
-  (let* ((table (make-hash-table :test 'eql :size 50)))
-    (puthash 0 "list" table)
-    (puthash -1 "boolean" table)
-    (puthash -2 "guid" table)
-    (puthash -4 "byte" table)
-    (puthash -5 "short" table)
-    (puthash -6 "int" table)
-    (puthash -7 "long" table)
-    (puthash -8 "real" table)
-    (puthash -9 "float" table)
-    (puthash -10 "char" table)
-    (puthash -11 "symbol" table)
-    (puthash -12 "timestamp" table)
-    (puthash -13 "month" table)
-    (puthash -14 "date" table)
-    (puthash -15 "datetime" table)
-    (puthash -16 "timespan" table)
-    (puthash -17 "minute" table)
-    (puthash -18 "second" table)
-    (puthash -19 "time" table)
-    (puthash 77 "anymap" table)
-    (puthash 97 "nested sym enum" table)
-    (puthash 98 "table" table)
-    (puthash 99 "dictionary" table)
-    (puthash 100 "lambda" table)
-    (puthash 101 "unary primitive" table)
-    (puthash 102 "operator" table)
-    (puthash 103 "iterator" table)
-    (puthash 104 "projection" table)
-    (puthash 105 "composition" table)
-    (puthash 106 "each modified function" table)
-    (puthash 107 "over accumulator function" table)
-    (puthash 108 "scan accumulator function" table)
-    (puthash 109 "each parallel or each prior" table)
-    (puthash 110 "each right" table)
-    (puthash 111 "each left" table)
-    (puthash 112 "dynamic load" table)
-    table)
+  (eval-when-compile
+    (let* ((table (make-hash-table :test 'eql :size 50)))
+      (puthash 0 "list" table)
+      (puthash -1 "boolean" table)
+      (puthash -2 "guid" table)
+      (puthash -4 "byte" table)
+      (puthash -5 "short" table)
+      (puthash -6 "int" table)
+      (puthash -7 "long" table)
+      (puthash -8 "real" table)
+      (puthash -9 "float" table)
+      (puthash -10 "char" table)
+      (puthash -11 "symbol" table)
+      (puthash -12 "timestamp" table)
+      (puthash -13 "month" table)
+      (puthash -14 "date" table)
+      (puthash -15 "datetime" table)
+      (puthash -16 "timespan" table)
+      (puthash -17 "minute" table)
+      (puthash -18 "second" table)
+      (puthash -19 "time" table)
+      (puthash 77 "anymap" table)
+      (puthash 97 "nested sym enum" table)
+      (puthash 98 "table" table)
+      (puthash 99 "dictionary" table)
+      (puthash 100 "lambda" table)
+      (puthash 101 "unary primitive" table)
+      (puthash 102 "operator" table)
+      (puthash 103 "iterator" table)
+      (puthash 104 "projection" table)
+      (puthash 105 "composition" table)
+      (puthash 106 "each modified function" table)
+      (puthash 107 "over accumulator function" table)
+      (puthash 108 "scan accumulator function" table)
+      (puthash 109 "each parallel or each prior" table)
+      (puthash 110 "each right" table)
+      (puthash 111 "each left" table)
+      (puthash 112 "dynamic load" table)
+      table))
   "Hashmap that maps q-type integers to strings.")
 
 (defun q-capf-describe-type (type)
