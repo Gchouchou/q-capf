@@ -478,8 +478,8 @@ and `q-capf-session-vars'."
   :keymap nil
   (if q-capf-eldoc-mode
       (progn
-        (eldoc-mode 1) ; enable `eldoc-mode' or else this does nothing
         (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t))
+        (eldoc-mode 1) ; enable `eldoc-mode' or else this does nothing
     (remove-hook 'eldoc-documentation-functions #'q-capf-eldoc t)))
 
 ;;;###autoload
