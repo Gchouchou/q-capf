@@ -55,8 +55,8 @@
   (eval-when-compile
     (let* ((dir (cond
                  (load-file-name)
-                 ((boundp 'byte-compile-current-file) byte-compile-current-file)
-                 (buffer-file-name)))
+                 (buffer-file-name)
+                 ((boundp 'byte-compile-current-file) byte-compile-current-file)))
            (file (concat (file-name-directory dir)
                          "builtins.json")))
       (with-temp-buffer
@@ -73,8 +73,8 @@
     (q-strip
      (let* ((dir (cond
                  (load-file-name)
-                 ((boundp 'byte-compile-current-file) byte-compile-current-file)
-                 (buffer-file-name)))
+                 (buffer-file-name)
+                 ((boundp 'byte-compile-current-file) byte-compile-current-file)))
             (file (concat (file-name-directory dir)
                           "query_env.q")))
        (with-temp-buffer
