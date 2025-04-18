@@ -23,17 +23,16 @@ To enable auto completion, turn on the `q-capf-mode` minor mode. To turn on the
 eldoc function, turn on `q-capf-eldoc-mode` minor mode. There are functions
 `q-capf-mode-enable` and `q-capf-eldoc-mode-enable` to easily activate and load the package.
 
-A sample configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`corfu`](https://github.com/minad/corfu) frontend:
+A simplistic configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`corfu`](https://github.com/minad/corfu) frontend:
 
 ``` emacs-lisp
-(use-package corfu
-  :init
-  (global-corfu-mode))
+(require 'corfu)
+(global-corfu-mode)
 
-(use-package 'q-mode
-  :defer t
-  ;; add hook to activate `q-capf-mode'
-  :hook (q-mode . q-capf-mode-enable))
+(require 'q-mode)
+(require 'q-capf)
+
+(add-hook 'q-mode-hook #'q-capf-mode)
 ```
 
 To load user global variables, run the following function i.e. `M-x q-capf-refresh-cache` with an active q-buffer.
