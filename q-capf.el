@@ -462,7 +462,7 @@ and `q-capf-session-vars'."
   :init-value nil
   :lighter " q-capf-eldoc"
   :keymap nil
-  (if q-capf-eldoc
+  (if q-capf-eldoc-mode
       (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t)
     (remove-hook 'eldoc-documentation-functions #'q-capf-eldoc t)))
 
