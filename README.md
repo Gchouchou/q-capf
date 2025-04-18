@@ -17,6 +17,11 @@ Features:
 # Installation and Config Setup
 
 `q-capf` uses json to communicate q variables and functions, for that reason emacs needs to be compiled with json.
+jansson compilation is not needed after emacs 30.1.
+
+To enable auto completion, turn on the `q-capf-mode` minor mode. To turn on the
+eldoc function, turn on `q-capf-eldoc-mode` minor mode. There are functions
+`q-capf-mode-enable` and `q-capf-eldoc-mode-enable` to easily activate and load the package.
 
 A sample configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`corfu`](https://github.com/minad/corfu) frontend:
 
@@ -27,12 +32,8 @@ A sample configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`c
 
 (use-package 'q-mode
   :defer t
-  ;; add hook to completion at point function
-  :hook (q-mode . (lambda ()
-                    (setq-local completion-at-point-functions #'q-capf-completion-at-point)))
-  :config
-  ;; load the package after q-mode is loaded
-  (require 'q-capf))
+  ;; add hook to activate `q-capf-mode'
+  :hook (q-mode . q-capf-mode-enable))
 ```
 
 To load user global variables, run the following function i.e. `M-x q-capf-refresh-cache` with an active q-buffer.

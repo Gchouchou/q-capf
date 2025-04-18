@@ -358,6 +358,16 @@ Auto completes variables and functions with candidates from
           (add-hook 'completion-at-point-functions #'q-capf-completion-at-point nil t)
         (remove-hook 'completion-at-point-functions #'q-capf-completion-at-point t)))
 
+;;;###autoload
+(defun q-capf-mode-enable ()
+  "Enable `q-capf-mode'."
+  (q-capf-mode 1))
+
+;;;###autoload
+(defun q-capf-mode-disable ()
+  "Disable `q-capf-mode'."
+  (q-capf-mode 0))
+
 ;;; eldoc functions
 
 (defun q-capf--bounds ()
@@ -471,6 +481,16 @@ and `q-capf-session-vars'."
         (eldoc-mode 1) ; enable `eldoc-mode' or else this does nothing
         (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t))
     (remove-hook 'eldoc-documentation-functions #'q-capf-eldoc t)))
+
+;;;###autoload
+(defun q-capf-eldoc-mode-enable ()
+  "Enable `q-capf-eldoc-mode'."
+  (q-capf-eldoc-mode 1))
+
+;;;###autoload
+(defun q-capf-eldoc-mode-disable ()
+  "Disable `q-capf-eldoc-mode'."
+  (q-capf-eldoc-mode 0))
 
 (provide 'q-capf)
 ;;; q-capf.el ends here
