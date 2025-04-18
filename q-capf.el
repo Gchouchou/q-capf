@@ -392,23 +392,27 @@ If it cannot match a valid variable it will give begin and end bounds at point."
       (cons begin end))))
 
 (defun q-capf-eldoc-get-bounds ()
-  "Function used by `q-capf-eldoc' to get the bounds of q variable/function."
+  "Function used by `q-capf-eldoc' to get the bounds of q variable/function.
+Returns ((start . end) . index), where index is used for function parameters."
   (save-excursion
     ;; move backward when there is a [
     (when (eq (char-after) 91) (backward-char))
-    (q-capf--bounds)))
+    ;; TODO: index is not used, could make a simple checker
+    (cons (q-capf--bounds) -1)))
 
 (defun q-capf-eldoc (callback &rest _ignored)
   "Print q var documentation by calling CALLBACK.
 
 Searches for the var at point through the hashtables `q-capf-builtin-vars'
 and `q-capf-session-vars'."
-  (when-let* ((bounds (when (and q-capf-session-vars
-                                 (hash-table-p q-capf-session-vars)
-                                 ;; do not trigger inside comments and strings
-                                 (not (nth 3 (syntax-ppss)))
-                                 (not (nth 4 (syntax-ppss))))
-                        (q-capf-eldoc-get-bounds)))
+  (when-let* ((meta (when (and q-capf-session-vars
+                               (hash-table-p q-capf-session-vars)
+                               ;; do not trigger inside comments and strings
+                               (not (nth 3 (syntax-ppss)))
+                               (not (nth 4 (syntax-ppss))))
+                      (q-capf-eldoc-get-bounds)))
+              (bounds (car meta))
+              (param-index (cdr meta))
               (thing (buffer-substring-no-properties (car bounds) (cdr bounds)))
               (face 'font-lock-variable-name-face)
               (doc (if (string-match
@@ -435,30 +439,34 @@ and `q-capf-session-vars'."
                              "any"))
               ;; first use function params
               (docstr (cond ((member "param" entries)
-                             (format "%s: param:(%s)"
-                                     type-string
-                                     (string-join (gethash "param" doc)
-                                                "; ")))
+                             (let* ((params (mapcar (lambda (s) (upcase (copy-sequence s))) (gethash "param" doc)))
+                                    (param (when (>= param-index 0) (nth param-index params))))
+                               (when param (add-text-properties 0 (length param) '(face bold) (nth param-index params)))
+                               (format "%s: param: %s"
+                                       type-string
+                                       (if (> (length params) 0)
+                                           (string-join params " ")
+                                         "()"))))
                             ;; then give table columns
                             ((member "cols" entries)
-                             (format "%s: cols:(%s)"
+                             (format "%s: cols: (%s)"
                                      type-string
                                      (string-join (let ((cols (gethash "cols" doc)))
                                                     (cl-subseq cols 0 (min (length cols) 20)))
                                                 "; ")))
                             ;; dictionary keys
                             ((member "keys" entries)
-                             (format "%s: keys:(%s)"
+                             (format "%s: keys: (%s)"
                                      type-string
                                      (string-join (let ((keys (gethash "keys" doc)))
                                                     (cl-subseq keys 0 (min (length keys) 20)))
                                                 "; ")))
                             ((member "doc" entries)
-                             (format "%s: doc:%s"
+                             (format "%s: doc: %s"
                                      type-string
                                      (gethash "doc" doc)))
                             ((member "body" entries)
-                             (format "%s: body:%s"
+                             (format "%s: body: %s"
                                      type-string
                                      (gethash "body" doc)))
                             (t (format "%s"
