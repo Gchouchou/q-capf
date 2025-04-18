@@ -463,7 +463,9 @@ and `q-capf-session-vars'."
   :lighter " q-capf-eldoc"
   :keymap nil
   (if q-capf-eldoc-mode
-      (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t)
+      (progn
+        (eldoc-mode 1) ; enable eldoc-mode or else this does nothing
+        (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t))
     (remove-hook 'eldoc-documentation-functions #'q-capf-eldoc t)))
 
 (provide 'q-capf)
