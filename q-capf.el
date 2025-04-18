@@ -159,7 +159,7 @@ or handle name."
                                                 ";"))))))
          (full-body (concat q-capf-function param ", \"\\n\"")))
     (cond
-     ((not (or (bufferp session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
+     ((not (or (buffer-live-p session) (stringp session))) (error "No session provided and no q-active-buffer provided"))
      ((and (get-buffer session) (not (comint-check-proc (get-buffer session)))
            (error "Found buffer %s but comint did not find any processes" (get-buffer session))))
      ;; it matches a buffer and is a q session
@@ -219,7 +219,7 @@ It should be added to `comint-preoutput-filter-functions' and will remove
 itself after processing a new line input.
 
 It stores the temporary string in `q-capf--temp-output' and then puts
- the hashmap in `q-capf-session-vars'."
+the hashmap in `q-capf-session-vars'."
   (let* ((nline-index (string-match "\n" output)))
     (setq q-capf--temp-output (concat q-capf--temp-output (substring output 0 nline-index)))
     (if-let* ((nline-index)
