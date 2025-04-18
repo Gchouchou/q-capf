@@ -312,8 +312,7 @@ Auto completes variables and functions with candidates from
               (lambda (cand)
                 (when-let* ((doc (q-capf-get-doc cand q-capf--namespace))
                             (docs (hash-table-keys doc))
-                            (body (mapconcat
-                                   #'identity
+                            (body (string-join
                                    (delete
                                     nil
                                     (list
@@ -324,16 +323,16 @@ Auto completes variables and functions with candidates from
                                      (when (member "cols" docs)
                                        ;; cols is converted to a vector
                                        (format "Table Columns:\n%s"
-                                               (mapconcat #'identity (gethash "cols" doc) ", ")))
+                                               (string-join (gethash "cols" doc) ", ")))
                                      (when (member "keys" docs)
                                        ;; keys is converted to a vector
                                        (format "Dictionary Keys:\n%s"
-                                               (mapconcat #'identity (gethash "keys" doc) ", ")))
+                                               (string-join (gethash "keys" doc) ", ")))
                                      (when (member "param" docs)
                                        ;; params is converted to a vector
                                        (if (< 0 (length (gethash "param" doc)))
                                            (format "Function Parameters Names:\n%s"
-                                                   (mapconcat #'identity (gethash "param" doc) ", "))
+                                                   (string-join (gethash "param" doc) ", "))
                                          "Function takes in no parameters"))
                                      (when (member "file" docs)
                                        (concat (format "Function source file: %s" (gethash "file" doc))
@@ -412,22 +411,22 @@ and `q-capf-session-vars'."
               (docstr (cond ((member "param" entries)
                              (format "%s: param:(%s)"
                                      type-string
-                                     (mapconcat #'identity (let ((param (gethash "param" doc)))
-                                                             (cl-subseq param 0 (min (length param) 20)))
+                                     (string-join (let ((param (gethash "param" doc)))
+                                                    (cl-subseq param 0 (min (length param) 20)))
                                                 "; ")))
                             ;; then give table columns
                             ((member "cols" entries)
                              (format "%s: cols:(%s)"
                                      type-string
-                                     (mapconcat #'identity (let ((cols (gethash "cols" doc)))
-                                                             (cl-subseq cols 0 (min (length cols) 20)))
+                                     (string-join (let ((cols (gethash "cols" doc)))
+                                                    (cl-subseq cols 0 (min (length cols) 20)))
                                                 "; ")))
                             ;; dictionary keys
                             ((member "keys" entries)
                              (format "%s: keys:(%s)"
                                      type-string
-                                     (mapconcat #'identity (let ((keys (gethash "keys" doc)))
-                                                             (cl-subseq keys 0 (min (length keys) 20)))
+                                     (string-join (let ((keys (gethash "keys" doc)))
+                                                    (cl-subseq keys 0 (min (length keys) 20)))
                                                 "; ")))
                             ((member "doc" entries)
                              (format "%s: doc:%s"
