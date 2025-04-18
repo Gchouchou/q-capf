@@ -349,6 +349,16 @@ Auto completes variables and functions with candidates from
                       (visual-line-mode))
                     (current-buffer)))))))))
 
+;;;###autoload
+(define-minor-mode q-capf-mode
+  "Adds `q-capf-completion-at-point' to `completion-at-point-functions'."
+  :init-value nil
+  :lighter " q-capf"
+  :keymap nil ; specify custom keybinding and/or function for `q-capf-refresh-cache'
+  (if q-capf-mode
+          (add-hook 'completion-at-point-functions #'q-capf-completion-at-point nil t)
+        (remove-hook 'completion-at-point-functions #'q-capf-completion-at-point t)))
+
 (defun q-capf--bounds ()
   "Return the bounds of a variable or function in q.
 If it cannot match a valid variable it will give begin and end bounds at point."
@@ -446,7 +456,15 @@ and `q-capf-session-vars'."
      :thing thing
      :face face)))
 
-(add-hook 'q-mode-hook (lambda () (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t)))
+;;;###autoload
+(define-minor-mode q-capf-eldoc-mode
+  "Adds `q-capf-eldoc' to `eldoc-documentation-functions' hook."
+  :init-value nil
+  :lighter " q-capf-eldoc"
+  :keymap nil
+  (if q-capf-eldoc
+      (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t)
+    (remove-hook 'eldoc-documentation-functions #'q-capf-eldoc t)))
 
 (provide 'q-capf)
 ;;; q-capf.el ends here
