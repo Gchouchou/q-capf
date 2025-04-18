@@ -358,6 +358,8 @@ Auto completes variables and functions with candidates from
           (add-hook 'completion-at-point-functions #'q-capf-completion-at-point nil t)
         (remove-hook 'completion-at-point-functions #'q-capf-completion-at-point t)))
 
+;;; eldoc functions
+
 (defun q-capf--bounds ()
   "Return the bounds of a variable or function in q.
 If it cannot match a valid variable it will give begin and end bounds at point."
@@ -379,20 +381,24 @@ If it cannot match a valid variable it will give begin and end bounds at point."
            (end (or end initial)))
       (cons begin end))))
 
+(defun q-capf-eldoc-get-bounds ()
+  "Function used by `q-capf-eldoc' to get the bounds of q variable/function."
+  (save-excursion
+    ;; move backward when there is a [
+    (when (eq (char-after) 91) (backward-char))
+    (q-capf--bounds)))
+
 (defun q-capf-eldoc (callback &rest _ignored)
   "Print q var documentation by calling CALLBACK.
 
 Searches for the var at point through the hashtables `q-capf-builtin-vars'
 and `q-capf-session-vars'."
-  (when-let* ((bounds (and q-capf-session-vars
-                           (hash-table-p q-capf-session-vars)
-                           ;; do not trigger inside comments and strings
-                           (not (nth 3 (syntax-ppss)))
-                           (not (nth 4 (syntax-ppss)))
-                           (save-excursion
-                             ;; move backward when there is a [
-                             (when (eq (char-after) 91) (backward-char))
-                             (q-capf--bounds))))
+  (when-let* ((bounds (when (and q-capf-session-vars
+                                 (hash-table-p q-capf-session-vars)
+                                 ;; do not trigger inside comments and strings
+                                 (not (nth 3 (syntax-ppss)))
+                                 (not (nth 4 (syntax-ppss))))
+                        (q-capf-eldoc-get-bounds)))
               (thing (buffer-substring-no-properties (car bounds) (cdr bounds)))
               (face 'font-lock-variable-name-face)
               (doc (if (string-match
