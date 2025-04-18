@@ -411,8 +411,7 @@ and `q-capf-session-vars'."
               (docstr (cond ((member "param" entries)
                              (format "%s: param:(%s)"
                                      type-string
-                                     (string-join (let ((param (gethash "param" doc)))
-                                                    (cl-subseq param 0 (min (length param) 20)))
+                                     (string-join (gethash "param" doc)
                                                 "; ")))
                             ;; then give table columns
                             ((member "cols" entries)
