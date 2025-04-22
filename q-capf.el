@@ -136,6 +136,7 @@
    ((<= 20 type 76) "enums")
    (t (gethash type q-capf-type-hashmap))))
 
+;;;###autoload
 (defun q-capf-refresh-cache (&optional all_names session)
   "Scrapes variables and functions in global namespace from `q-active-buffer'.
 Populates `q-capf-session-vars' cache for `q-capf-completion-at-point'.
@@ -257,6 +258,7 @@ Searches documentation in `q-capf-session-vars' and `q-capf-builtin-vars'."
         (when-let ((session-vars (gethash "" q-capf-session-vars)))
           (gethash symbol session-vars)))))
 
+;;;###autoload
 (defun q-capf-completion-at-point ()
   "Completion at point function for q-mode.
 
@@ -400,6 +402,7 @@ Returns ((start . end) . index), where index is used for function parameters."
     ;; TODO: index is not used, could make a simple checker
     (cons (q-capf--bounds) -1)))
 
+;;;###autoload
 (defun q-capf-eldoc (callback &rest _ignored)
   "Print q var documentation by calling CALLBACK.
 
