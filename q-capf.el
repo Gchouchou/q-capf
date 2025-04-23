@@ -45,7 +45,7 @@
 
 (defcustom q-capf-excluded-namespaces ()
   "List of namespaces to exclude."
-  :type 'list
+  :type '(repeat string)
   :group 'q-capf)
 
 (defvar q-capf-session-vars (make-hash-table :size 5 :test 'equal)
