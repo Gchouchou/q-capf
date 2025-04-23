@@ -19,9 +19,9 @@ Features:
 `q-capf` uses json to communicate q variables and functions, for that reason emacs needs to be compiled with json.
 jansson compilation is not needed after emacs 30.1.
 
-To enable auto completion, turn on the `q-capf-mode` minor mode. To turn on the
-eldoc function, turn on `q-capf-eldoc-mode` minor mode. There are functions
-`q-capf-mode-enable` and `q-capf-eldoc-mode-enable` to easily activate and load the package.
+To enable auto completion, add `q-capf-completion-at-point` to the `completion-at-point-function` hook.
+To enable eldoc function, add `q-capf-eldoc` to the `eldoc-documentation-functions` hook.
+Ideally, they should be set in `q-mode-hook`.
 
 A simplistic configuration with [`q-mode`](https://github.com/psaris/q-mode) and [`corfu`](https://github.com/minad/corfu) frontend:
 
@@ -32,7 +32,8 @@ A simplistic configuration with [`q-mode`](https://github.com/psaris/q-mode) and
 (require 'q-mode)
 (require 'q-capf)
 
-(add-hook 'q-mode-hook #'q-capf-mode)
+(add-hook 'q-mode-hook (lambda () (setq-local completion-at-point-functions '(#'q-capf-completion-at-point))
+                         (add-hook eldoc-documentation-functions #'q-capf-eldoc -100 t)))
 ```
 
 To load user global variables, run the following function i.e. `M-x q-capf-refresh-cache` with an active q-buffer.
@@ -51,5 +52,5 @@ To extend the number of builtin variables, see `builtins.json` for the format re
 
 `query_env.q` contains the `q` lambda used to scrape from the live session. It returns a json string of a similar format
 to `builtins.json`. Since namespaces are simply dictionaries, there is no difference between a dictionary and a namespace inside a dictionary.
-Beacuse of this issue, `query_env.q` does not scrape deeper than one layer inside the namespace. There is no distinction between a sub namespace and
+Because of this issue, `query_env.q` does not scrape deeper than one layer inside the namespace. There is no distinction between a sub namespace and
 a dictionary.

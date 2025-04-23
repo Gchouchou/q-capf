@@ -350,26 +350,6 @@ Auto completes variables and functions with candidates from
                       (visual-line-mode))
                     (current-buffer)))))))))
 
-;;;###autoload
-(define-minor-mode q-capf-mode
-  "Adds `q-capf-completion-at-point' to `completion-at-point-functions'."
-  :init-value nil
-  :lighter " q-capf"
-  :keymap nil ; specify custom keybinding and/or function for `q-capf-refresh-cache'
-  (if q-capf-mode
-          (add-hook 'completion-at-point-functions #'q-capf-completion-at-point nil t)
-        (remove-hook 'completion-at-point-functions #'q-capf-completion-at-point t)))
-
-;;;###autoload
-(defun q-capf-mode-enable ()
-  "Enable `q-capf-mode'."
-  (q-capf-mode 1))
-
-;;;###autoload
-(defun q-capf-mode-disable ()
-  "Disable `q-capf-mode'."
-  (q-capf-mode 0))
-
 ;;; eldoc functions
 
 (defun q-capf--bounds ()
@@ -480,28 +460,6 @@ and `q-capf-session-vars'."
      docstr
      :thing thing
      :face face)))
-
-;;;###autoload
-(define-minor-mode q-capf-eldoc-mode
-  "Adds `q-capf-eldoc' to `eldoc-documentation-functions' hook."
-  :init-value nil
-  :lighter " q-capf-eldoc"
-  :keymap nil
-  (if q-capf-eldoc-mode
-      (progn
-        (add-hook 'eldoc-documentation-functions #'q-capf-eldoc nil t))
-        (eldoc-mode 1) ; enable `eldoc-mode' or else this does nothing
-    (remove-hook 'eldoc-documentation-functions #'q-capf-eldoc t)))
-
-;;;###autoload
-(defun q-capf-eldoc-mode-enable ()
-  "Enable `q-capf-eldoc-mode'."
-  (q-capf-eldoc-mode 1))
-
-;;;###autoload
-(defun q-capf-eldoc-mode-disable ()
-  "Disable `q-capf-eldoc-mode'."
-  (q-capf-eldoc-mode 0))
 
 (provide 'q-capf)
 ;;; q-capf.el ends here
