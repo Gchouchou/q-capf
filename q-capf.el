@@ -374,10 +374,26 @@ If it cannot match a valid variable it will give begin and end bounds at point."
   "Function used by `q-capf-eldoc' to get the bounds of q variable/function.
 Returns ((start . end) . index), where index is used for function parameters."
   (save-excursion
-    ;; move backward when there is a [
-    (when (eq (char-after) 91) (backward-char))
-    ;; TODO: index is not used, could make a simple checker
-    (cons (q-capf--bounds) -1)))
+    (let* ((bounds (q-capf--bounds))
+           (pos (point)))
+      (cond ((not (eq (car bounds) (cdr bounds))) (cons bounds -1))
+            ((progn (skip-chars-backward " \t")
+                    (eq ?w (char-syntax (char-before))))
+             ;; possibly the first argument of the function
+             (cons (q-capf--bounds) 0))
+            ;; try to find parameter pass
+            (t (condition-case nil
+                   (progn
+                     (backward-up-list)
+                     (when (eq ?\[ (char-after))
+                       (let* ((bounds (q-capf--bounds))
+                              (n 0))
+                         (while (search-forward ";" pos t)
+                           (unless (or (nth 3 (syntax-ppss))
+                                       (nth 4 (syntax-ppss)))
+                             (setq n (1+ n))))
+                         (cons bounds n))))
+                 (scan-error nil)))))))
 
 ;;;###autoload
 (defun q-capf-eldoc (callback &rest _ignored)
@@ -420,7 +436,7 @@ and `q-capf-session-vars'."
               ;; first use function params
               (docstr (cond ((member "param" entries)
                              (let* ((params (mapcar (lambda (s) (upcase (copy-sequence s))) (gethash "param" doc)))
-                                    (param (when (>= param-index 0) (nth param-index params))))
+                                    (param (when (< -1 param-index (length params)) (nth param-index params))))
                                (when param (add-text-properties 0 (length param) '(face bold) (nth param-index params)))
                                (format "%s: param: %s"
                                        type-string
