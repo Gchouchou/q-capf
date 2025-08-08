@@ -376,7 +376,7 @@ Returns ((start . end) . index), where index is used for function parameters."
   (save-excursion
     (let* ((bounds (q-capf--bounds))
            (pos (point)))
-      (cond ((not (eq (car bounds) (cdr bounds))) (cons bounds -1))
+      (cond ((or (bobp) (not (eq (car bounds) (cdr bounds)))) (cons bounds -1))
             ((progn (skip-chars-backward " \t")
                     (eq ?w (char-syntax (char-before))))
              ;; possibly the first argument of the function
