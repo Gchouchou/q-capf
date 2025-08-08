@@ -32,8 +32,8 @@ A simplistic configuration with [`q-mode`](https://github.com/psaris/q-mode) and
 (require 'q-mode)
 (require 'q-capf)
 
-(add-hook 'q-mode-hook (lambda () (setq-local completion-at-point-functions '(#'q-capf-completion-at-point))
-                         (add-hook eldoc-documentation-functions #'q-capf-eldoc -100 t)))
+(add-hook 'q-mode-hook (lambda () (setq-local 'completion-at-point-functions '(#'q-capf-completion-at-point))
+                         (add-hook 'eldoc-documentation-functions #'q-capf-eldoc -100 t)))
 ```
 
 To load user global variables, run the following function i.e. `M-x q-capf-refresh-cache` with an active q-buffer.
