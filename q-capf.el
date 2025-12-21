@@ -299,53 +299,59 @@ Auto completes variables and functions with candidates from
               scandidates
               :exclusive 'no
               :annotation-function
-              (lambda (cand)
-                (format " %s"
-                        (if-let* ((doc (q-capf-get-doc cand q-capf--namespace))
-                                  (type (gethash "type" doc)))
-                            (q-capf-describe-type type)
-                          (if (string-match-p "^\\..*\\.$" cand)
-                              "namespace"
-                            "any"))))
+              #'q-capf--capf-annotation
               :company-doc-buffer
-              (lambda (cand)
-                (when-let* ((doc (q-capf-get-doc cand q-capf--namespace))
-                            (docs (hash-table-keys doc))
-                            (body (string-join
-                                   (delete
-                                    nil
-                                    (list
-                                     (when (member "type" docs)
-                                       (format "%s is a %s." cand (q-capf-describe-type (gethash "type" doc))))
-                                     (when (member "doc" docs)
-                                       (format "%s" (gethash "doc" doc)))
-                                     (when (member "cols" docs)
-                                       ;; cols is converted to a vector
-                                       (format "Table Columns:\n%s"
-                                               (string-join (gethash "cols" doc) ", ")))
-                                     (when (member "keys" docs)
-                                       ;; keys is converted to a vector
-                                       (format "Dictionary Keys:\n%s"
-                                               (string-join (gethash "keys" doc) ", ")))
-                                     (when (member "param" docs)
-                                       ;; params is converted to a vector
-                                       (if (< 0 (length (gethash "param" doc)))
-                                           (format "Function Parameters Names:\n%s"
-                                                   (string-join (gethash "param" doc) ", "))
-                                         "Function takes in no parameters"))
-                                     (when (member "file" docs)
-                                       (concat (format "Function source file: %s" (gethash "file" doc))
-                                               (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
-                                     (when (member "body" docs)
-                                       (format "Function Body:\n%s" (gethash "body" doc)))))
-                                   "\n")))
-                  (with-current-buffer (get-buffer-create "*documentation*")
-                    (erase-buffer)
-                    (fundamental-mode)
-                    (save-excursion
-                      (insert body)
-                      (visual-line-mode))
-                    (current-buffer)))))))))
+              #'q-capf--capf-doc-buffer)))))
+
+(defun q-capf--capf-annotation (cand)
+  "Annotation function of CAND for `q-capf-completion-at-point'."
+  (format " %s"
+          (if-let* ((doc (q-capf-get-doc cand q-capf--namespace))
+                    (type (gethash "type" doc)))
+              (q-capf-describe-type type)
+            (if (string-match-p "^\\..*\\.$" cand)
+                "namespace"
+              "any"))))
+
+(defun q-capf--capf-doc-buffer (cand)
+  "Doc Buffer function of CAND for `q-capf-completion-at-point'."
+  (when-let* ((doc (q-capf-get-doc cand q-capf--namespace))
+              (docs (hash-table-keys doc))
+              (body (string-join
+                     (delete
+                      nil
+                      (list
+                       (when (member "type" docs)
+                         (format "%s is a %s." cand (q-capf-describe-type (gethash "type" doc))))
+                       (when (member "doc" docs)
+                         (format "%s" (gethash "doc" doc)))
+                       (when (member "cols" docs)
+                         ;; cols is converted to a vector
+                         (format "Table Columns:\n%s"
+                                 (string-join (gethash "cols" doc) ", ")))
+                       (when (member "keys" docs)
+                         ;; keys is converted to a vector
+                         (format "Dictionary Keys:\n%s"
+                                 (string-join (gethash "keys" doc) ", ")))
+                       (when (member "param" docs)
+                         ;; params is converted to a vector
+                         (if (< 0 (length (gethash "param" doc)))
+                             (format "Function Parameters Names:\n%s"
+                                     (string-join (gethash "param" doc) ", "))
+                           "Function takes in no parameters"))
+                       (when (member "file" docs)
+                         (concat (format "Function source file: %s" (gethash "file" doc))
+                                 (when (member "line" docs) (format "\nline:%s" (gethash "line" doc)))))
+                       (when (member "body" docs)
+                         (format "Function Body:\n%s" (gethash "body" doc)))))
+                     "\n")))
+    (with-current-buffer (get-buffer-create "*documentation*")
+      (erase-buffer)
+      (fundamental-mode)
+      (save-excursion
+        (insert body)
+        (visual-line-mode))
+      (current-buffer))))
 
 ;;; eldoc functions
 
