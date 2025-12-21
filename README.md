@@ -32,7 +32,7 @@ A simplistic configuration with [`q-mode`](https://github.com/psaris/q-mode) and
 (require 'q-mode)
 (require 'q-capf)
 
-(add-hook 'q-mode-hook (lambda () (setq-local 'completion-at-point-functions '(#'q-capf-completion-at-point))
+(add-hook 'q-mode-hook (lambda () (setq-local completion-at-point-functions '(#'q-capf-completion-at-point))
                          (add-hook 'eldoc-documentation-functions #'q-capf-eldoc -100 t)))
 ```
 
