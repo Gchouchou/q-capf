@@ -436,9 +436,11 @@ and `q-capf-session-vars'."
                          (when (gethash "" q-capf-session-vars)
                            (gethash thing (gethash "" q-capf-session-vars))))))
               (entries (hash-table-keys doc))
-              (type-string (if-let* ((type (gethash "type" doc)))
-                               (q-capf-describe-type type)
-                             "any"))
+              (type-string (propertize
+                            (if-let* ((type (gethash "type" doc)))
+                                (q-capf-describe-type type)
+                              "any")
+                            'face 'font-lock-type-face))
               ;; first use function params
               (docstr (cond ((member "param" entries)
                              (let* ((params (mapcar (lambda (s) (upcase (copy-sequence s))) (gethash "param" doc)))
@@ -473,7 +475,6 @@ and `q-capf-session-vars'."
                                      (gethash "body" doc)))
                             (t (format "%s"
                                        type-string)))))
-    (put-text-property 0 (length type-string) 'face 'font-lock-type-face docstr)
     (funcall
      callback
      docstr
