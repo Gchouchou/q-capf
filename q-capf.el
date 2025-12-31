@@ -456,14 +456,14 @@ and `q-capf-session-vars'."
                              (format "%s: cols: (%s)"
                                      type-string
                                      (string-join (let ((cols (gethash "cols" doc)))
-                                                    (cl-subseq cols 0 (min (length cols) 20)))
+                                                    (seq-subseq cols 0 (min (length cols) 20)))
                                                 "; ")))
                             ;; dictionary keys
                             ((member "keys" entries)
                              (format "%s: keys: (%s)"
                                      type-string
                                      (string-join (let ((keys (gethash "keys" doc)))
-                                                    (cl-subseq keys 0 (min (length keys) 20)))
+                                                    (seq-subseq keys 0 (min (length keys) 20)))
                                                 "; ")))
                             ((member "doc" entries)
                              (format "%s: doc: %s"
