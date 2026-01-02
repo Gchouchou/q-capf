@@ -261,6 +261,7 @@ Searches documentation in `q-capf-session-vars' and `q-capf-builtin-vars'."
 
 Auto completes variables and functions with candidates from
 `q-capf-session-vars' and `q-capf-builtin-vars'."
+  (interactive)
   (when (and (hash-table-p q-capf-session-vars)
              ;; do not trigger inside comments and strings
              (not (nth 3 (syntax-ppss)))
