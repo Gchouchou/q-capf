@@ -19,19 +19,26 @@
 
   / get parameters for composition and projection
   get_param:{[function]
-   t: type function;
-   v: value function;
-   :$[
-    / projection
-    (100 = type first v) & (t = 104);
-    / take unspecified parameters
-    enlist[`param]!enlist (value[v[0]][1]) where
-    ({$[101 = type x; x = (::); 0b]} each (1_v)), (((count value[v[0]][1]) - (count v) - 1)#1b);
-    / composition
-    (100 = type last v) & (t = 105); enlist[`param]!enlist value[last v][1];
-    / other stuff are nyi
-    ()
-    ]
+   args: @[{[function]
+            t: type function;
+            v: value function;
+            :$[
+              / lambda
+              t = 100; v[1];
+              / composition
+              t = 105; .z.s[last v];
+              / projection
+              t = 104;
+              [
+               args: .z.s[first v];
+               args where ({$[101 = type x; x = (::); 0b]} each (1_v)),
+                           (((count args) - (count v) - 1)#1b)
+               ];
+              '"unsupported type"
+              ]
+            };
+           function; -1];
+   $[11h=type args; enlist[`param]!enlist[args]; ()]
    };
 
   / output documentation dictionary
