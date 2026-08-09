@@ -482,5 +482,44 @@ and `q-capf-session-vars'."
      :thing thing
      :face face)))
 
+(defun q-capf--entries-for-identifier (default-fun identifier index-key)
+  "Search for a function IDENTIFIER in `q-capf-session-vars'.
+DEFAULT-FUN is `q--entries-for-identifier' and is used
+nothing is found or searching for references."
+  (cond
+   ;; revert to default if not looking for definitions
+   ((not (equal index-key :definition-index))
+    (apply default-fun identifier index-key))
+   ;; check if identifier is in global namespace `q-capf-session-vars'
+   ((string-match-p "^[^.]" identifier)
+    (if-let* ((global-ns (gethash "" q-capf-session-vars))
+              (doc (gethash identifier global-ns))
+              (file (gethash "file" doc))
+              (line (gethash "line" doc))
+              (summary (when (file-readable-p file)
+                         "unused")))
+        `((:file ,file :line ,line :summary ,summary))
+      (apply default-fun identifier index-key)))
+   ;; check if identifier is in specific namespace `q-capf-session-vars'
+   ((string-match "^\\.\\([a-zA-Z][a-zA-Z0-9_]*\\)\\.\\(.*\\)" identifier)
+    (if-let* ((namespace (match-string 1 identifier))
+              (id (match-string 2 identifier))
+              (namespace-doc (gethash namespace q-capf-session-vars))
+              (doc (gethash id namespace-doc))
+              (file (gethash "file" doc))
+              (line (gethash "line" doc))
+              (summary (when (file-readable-p file)
+                         "unused")))
+        `((:file ,file :line ,line :summary ,summary))
+      (apply default-fun identifier index-key)))
+   (t (apply default-fun identifier index-key))))
+
+(advice-add 'q--entries-for-identifier :around #'q-capf--entries-for-identifier)
+
+(defun q-capf-clean-session-vars ()
+  "Cleans `q-capf-session-vars'."
+  (interactive)
+  (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal)))
+
 (provide 'q-capf)
 ;;; q-capf.el ends here
