@@ -165,7 +165,7 @@ or handle name."
            (error "Found buffer %s but comint did not find any processes" (get-buffer session))))
      ;; it matches a buffer and is a q session
      ((and (get-buffer session)
-           (string-match-p "\*q\\(-.*\\|\\)\*" (buffer-name (get-buffer session))))
+           (string-match-p "\*q\\(?:-.*\\)?\*" (buffer-name (get-buffer session))))
       (when all_names
         ;; full reset cache
         (setq q-capf-session-vars (make-hash-table :size 5 :test 'equal))
