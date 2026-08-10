@@ -489,7 +489,7 @@ nothing is found or searching for references."
   (cond
    ;; revert to default if not looking for definitions
    ((not (equal index-key :definition-index))
-    (apply default-fun identifier index-key))
+    (funcall default-fun identifier index-key))
    ;; check if identifier is in global namespace `q-capf-session-vars'
    ((string-match-p "^[^.]" identifier)
     (if-let* ((global-ns (gethash "" q-capf-session-vars))
@@ -499,7 +499,7 @@ nothing is found or searching for references."
               (summary (when (file-readable-p file)
                          "unused")))
         `((:file ,file :line ,line :summary ,summary))
-      (apply default-fun identifier index-key)))
+      (funcall default-fun identifier index-key)))
    ;; check if identifier is in specific namespace `q-capf-session-vars'
    ((string-match "^\\.\\([a-zA-Z][a-zA-Z0-9_]*\\)\\.\\(.*\\)" identifier)
     (if-let* ((namespace (match-string 1 identifier))
@@ -511,8 +511,8 @@ nothing is found or searching for references."
               (summary (when (file-readable-p file)
                          "unused")))
         `((:file ,file :line ,line :summary ,summary))
-      (apply default-fun identifier index-key)))
-   (t (apply default-fun identifier index-key))))
+      (funcall default-fun identifier index-key)))
+   (t (funcall default-fun identifier index-key))))
 
 (advice-add 'q--entries-for-identifier :around #'q-capf--entries-for-identifier)
 
